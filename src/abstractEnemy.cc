@@ -1,5 +1,4 @@
 #include "abstractEnemy.h"
-#include "utilities.h"
 
 #include "game.h"
 #include "player.h"
@@ -7,6 +6,8 @@
 #include "tile.h"
 #include "goldPile.h"
 #include "turnSummary.h"
+#include "utilities.h"
+#include <sstream>
 
 // Pipe the constructor through.
 AbstractEnemy::AbstractEnemy(int maxhp, int atk, int def) : Character(maxhp, atk, def, 0) {}
@@ -39,19 +40,32 @@ void AbstractEnemy::getHitBy(Goblin *p) {
 }
 
 /**
- *	By default, on death, enemies drop a hoard. This is either Normal or Small
- *	(equally likely).
+ *	By default, on death, enemies drop a gold pile. This is either Normal or
+ *	Small (equally likely).
  */
 void AbstractEnemy::die() {
 	Tile *tile = this->getTile();
-	GoldPile *goldPile;
+	GoldPile::GoldPileSize gps = Game::getInstance()->rand(2)
+		? GoldPile::SmallPile
+		: GoldPile::NormalPile;
 
-	if (Game::getInstance()->rand(2) == 0) {
-		goldPile = new GoldPile(GoldPile::SmallPile);
+	if (Game::getInstance()->hasDLC(DLC::Inventory)) {
+		// With the Inventory DLC active, physically drop the GoldPile.
+		GoldPile *goldPile = new GoldPile(gps);
+		tile->setContents(goldPile);
 	} else {
-		goldPile = new GoldPile(GoldPile::NormalPile);
+		// Without the Inventory DLC, add the gold directly.
+		int gold = static_cast<int>(gps);
+		Game::getInstance()->getPlayer()->addGold(gold);
+
+		// Also log it...
+		std::ostringstream oss;
+		oss << "Player picked up " << gold << " gold!";
+		TurnSummary::add(oss.str());
+
+		// ... and clear the Tile.
+		tile->setContents(NULL);
 	}
-	tile->setContents(goldPile);
 
 	// Go up to the super.
 	Character::die();

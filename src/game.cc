@@ -34,6 +34,14 @@ bool Game::hasDLC(DLC dlc) const {
 	return this->dlcs.count(dlc);
 }
 
+void Game::setDLC(DLC dlc, bool b) {
+	if (b) {
+		this->dlcs.insert(dlc);
+	} else {
+		this->dlcs.erase(dlc);
+	}
+}
+
 Player* Game::getPlayer() {
 	return this->player;
 }

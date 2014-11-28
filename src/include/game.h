@@ -3,6 +3,9 @@
 
 #include <set>
 
+// Explicitly provide access to DLC whenever we include game.h.
+#include "dlc.h"
+
 class AbstractPlayerEffect;
 class Player;
 class Floor;
@@ -16,6 +19,7 @@ public:
 	static Game *getInstance();
 
 	bool hasDLC(DLC) const;
+	void setDLC(DLC, bool = true);
 
 	Player* getPlayer();
 	void addPlayerEffect(AbstractPlayerEffect*);
