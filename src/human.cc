@@ -51,7 +51,7 @@ void Human::die() {
 
 		// Also log it...
 		std::ostringstream oss;
-		oss << "Player picked up " << gold << " gold!";
+		oss << Game::getInstance()->getPlayer()->getName() << " picked up " << gold << " gold!";
 		TurnSummary::add(oss.str());
 
 		// ... and clear the Tile.
