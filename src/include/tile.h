@@ -28,8 +28,6 @@ public:
 	Renderable* getContents() const;
 	void setContents(Renderable*);
 
-	int getR() const;
-	int getC() const;
 	int getDistance(Tile*) const;
 	int getTaxicabDistance(Tile*) const;
 
@@ -43,7 +41,6 @@ public:
 	//std::string render();
 
 private:
-	int r, c;
 	//int chamber;
 	TileType tt;
 	Renderable *contents;

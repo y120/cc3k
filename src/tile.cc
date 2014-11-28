@@ -4,7 +4,7 @@
 #include "game.h"
 #include "floor.h"
 
-Tile::Tile(int r, int c, TileType tt, Renderable *contents) : r(r), c(c), tt(tt),
+Tile::Tile(int r, int c, TileType tt, Renderable *contents) : Renderable(r, c), tt(tt),
 	contents(contents) {}
 
 // Note: we do not delete the contents on destruction, since this will be
@@ -66,14 +66,6 @@ Renderable* Tile::getContents() const {
 
 void Tile::setContents(Renderable *contents) {
 	this->contents = contents;
-}
-
-int Tile::getR() const {
-	return this->r;
-}
-
-int Tile::getC() const {
-	return this->c;
 }
 
 int Tile::getDistance(Tile *t) const {

@@ -2,22 +2,23 @@
 #define __RENDERABLE_H__
 
 #include <string>
-#include "point.h"
 
 class Renderable {
 	std::string name;
 	std::string sprite;
-	Point pos;
+protected:
+	int r, c;
 public:
 	Renderable();
+	Renderable(int, int);
 	Renderable(std::string, int, int);
 	virtual ~Renderable();
 	std::string getName() const;
 	std::string getSprite() const;
-	Point getPosition() const;
+	int getR() const;
+	int getC() const;
 	void setName(const std::string &);
 	void setSprite(const std::string &);
-	void move(const Point &);
 	void move(int row = 0, int col = 0);
 };
 

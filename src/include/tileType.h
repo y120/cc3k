@@ -2,7 +2,7 @@
 #define __TILE_TYPE_H__
 
 enum class TileType {
-	NoTile,
+	NoTile = 0,
 	FloorTile,
 	WallTile,
 	DoorTile,

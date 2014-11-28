@@ -3,11 +3,15 @@
 using namespace std;
 
 Renderable::Renderable()
-	: name("Unknown"), sprite("?"), pos(0, 0)
+	: name("Unknown"), sprite("?"), r(0), c(0)
+{}
+
+Renderable::Renderable(int row, int col)
+	: name("Unknown"), sprite("?"), r(row), c(col)
 {}
 
 Renderable::Renderable(string spr, int row, int col)
-	: name(spr), sprite(spr), pos(row, col)
+	: name(spr), sprite(spr), r(row), c(col)
 {}
 
 Renderable::~Renderable() {}
@@ -20,8 +24,12 @@ string Renderable::getSprite() const {
 	return sprite;
 }
 
-Point Renderable::getPosition() const {
-	return pos;
+int Renderable::getR() const {
+	return r;
+}
+
+int Renderable::getC() const {
+	return c;
 }
 
 void Renderable::setName(const string &nam) {
@@ -32,11 +40,7 @@ void Renderable::setSprite(const string &spr) {
 	sprite = spr;
 }
 
-void Renderable::move(const Point &pt) {
-	pos = pt;
-}
-
 void Renderable::move(int row, int col) {
-	pos.r = row;
-	pos.c = col;
+	r = row;
+	c = col;
 }
