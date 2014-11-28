@@ -40,6 +40,8 @@ public:
 	// Changed display code - render() no longer returns a string
 	//std::string render();
 
+	void render();
+
 private:
 	//int chamber;
 	TileType tt;

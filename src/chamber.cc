@@ -91,3 +91,13 @@ int Chamber::getId() const {
 void Chamber::setId(int id) {
 	this->id = id;
 }
+
+/**
+ *	Renders all tiles of the chamber
+ */
+void Chamber::render() {
+	for (std::map<std::pair<int, int>, Tile*>::iterator mIt = tiles.begin();
+		 mIt != tiles.end(); mIt++) {
+		mIt->second->render();
+	}
+}

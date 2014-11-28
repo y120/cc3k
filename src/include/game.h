@@ -32,6 +32,7 @@ public:
 
 	// The main game loop.
 	void loop();
+	void render();
 
 	// Various helpers!
 	int getPotionStrength(bool = true) const;

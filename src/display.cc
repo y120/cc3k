@@ -1,7 +1,6 @@
 #include <iostream>
 #include "display.h"
 #include "renderable.h"
-#include "point.h"
 
 using namespace std;
 
@@ -30,22 +29,22 @@ void Display::resize(int row, int col) {
 		//screenBuffer[l0].resize(col);
 		screenBuffer[l0] = reset;
 	}
-	size.r = row;
-	size.c = col;
+	rSize = row;
+	cSize = col;
 }
 
 void Display::draw(const Renderable *ado) {
-	draw(ado->getSprite(), ado->getPosition().r, ado->getPosition().c);
+	draw(ado->getSprite(), ado->getR(), ado->getC());
 }
 
 void Display::draw(const string &sprite, int row, int col) {
-	screenBuffer[row % size.r].replace(
-		col % size.c, sprite.length(), sprite
+	screenBuffer[row % rSize].replace(
+		col % cSize, sprite.length(), sprite
 	);
 }
 
 void Display::render() const {
-	for (int l0 = 0; l0 < size.r; l0++) {
+	for (int l0 = 0; l0 < rSize; l0++) {
 		*out << screenBuffer[l0] << endl;
 	}
 }

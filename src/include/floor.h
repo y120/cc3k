@@ -40,6 +40,8 @@ public:
 	Chamber *getChamber(int, int) const;
 	Chamber *getChamber(Tile*) const;
 
+	void render();
+
 protected:
 	Tile *getRandomUnoccupiedTile() const;
 

@@ -101,3 +101,14 @@ std::vector<Tile*> Tile::getUnoccupiedNeighbours() const {
 	}
 	return unoccupied;
 }
+
+void Tile::render() {
+	// If tile is empty, render the tile itself
+	// If graphics are implemented, remove the if statement as the
+	// tile ought to be rendered anyway
+	if (contents == NULL) {
+		Renderable::render();
+	} else {
+		contents->render();
+	}
+}

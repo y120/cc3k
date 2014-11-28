@@ -68,6 +68,10 @@ void Game::loop() {
 	// TODO
 }
 
+void Game::render() {
+	floors[currentFloor]->render();
+}
+
 int Game::getPotionStrength(bool withModifiers) const {
 	return std::ceil(POTION_STRENGTH * (withModifiers ? this->potionModifier : 1));
 }

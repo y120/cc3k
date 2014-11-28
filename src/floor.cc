@@ -318,6 +318,17 @@ Chamber *Floor::getChamber(Tile *tile) const {
 }
 
 /**
+ *	Renders all chambers on the floor
+ */
+void Floor::render() {
+	for (int l0 = 0; l0 < (int)chambers.size(); l0++) {
+		if (chambers[l0]) {
+			chambers[l0]->render();
+		}
+	}
+}
+
+/**
  *	Gets a random unoccupied tile from a random chamber. The selected tile has
  *	an equal chance of being selected from each chamber.
  *

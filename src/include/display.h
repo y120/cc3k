@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <vector>
-#include "point.h"
 
 class Renderable;
 
@@ -15,7 +14,7 @@ class Display {
 	
 	std::ostream* out;
 	std::vector<std::string> screenBuffer;
-	Point size;
+	int rSize, cSize;
 public:
 	static Display *getInstance();
 	void setSource(std::ostream *);

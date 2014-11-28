@@ -22,6 +22,8 @@ public:
 	int getId() const;
 	void setId(int);
 
+	void render();
+
 private:
 	int id;
 	std::map<std::pair<int, int>, Tile*> tiles; 

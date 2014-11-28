@@ -1,4 +1,5 @@
 #include "renderable.h"
+#include "display.h"
 
 using namespace std;
 
@@ -43,4 +44,9 @@ void Renderable::setSprite(const string &spr) {
 void Renderable::move(int row, int col) {
 	r = row;
 	c = col;
+}
+
+// Renders the object to the Display
+void Renderable::render() {
+	Display::getInstance()->draw(this);
 }
