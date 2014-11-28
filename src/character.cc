@@ -67,7 +67,7 @@ bool Character::isDead() const {
  */
 void Character::die() {
 	std::ostringstream oss;
-	oss << this->render() << " dies.";
+	oss << this->getName() << " dies.";
 	TurnSummary::add(oss.str());
 	this->pImpl->pos.r = -1;
 	this->pImpl->pos.c = -1;

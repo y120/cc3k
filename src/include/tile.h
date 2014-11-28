@@ -39,7 +39,8 @@ public:
 	//int getChamber() const;
 	//void setChamber(int);
 
-	std::string render();
+	// Changed display code - render() no longer returns a string
+	//std::string render();
 
 private:
 	int r, c;

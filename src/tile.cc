@@ -109,7 +109,3 @@ std::vector<Tile*> Tile::getUnoccupiedNeighbours() const {
 	}
 	return unoccupied;
 }
-
-std::string Tile::render() {
-	return this->isOccupied() ? this->contents->render() : "";
-}

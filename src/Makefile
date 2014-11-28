@@ -3,6 +3,7 @@ CXX = g++
 CXXFLAGS = -Wall -MMD -std=c++11 -Iinclude
 LDLIBS = -lX11
 OBJECTS = \
+	point.o \
 	renderable.o \
 		character.o \
 			abstractPlayerEffect.o \
