@@ -32,7 +32,7 @@ public:
 	int getDistance(Tile*) const;
 	int getTaxicabDistance(Tile*) const;
 
-	std::vector<Tile*> getNeighbours() const;
+	const std::vector<Tile*>& getNeighbours() const;
 	std::vector<Tile*> getUnoccupiedNeighbours() const;
 
 	Chamber *getChamber() const;

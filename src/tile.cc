@@ -76,15 +76,19 @@ int Tile::getTaxicabDistance(Tile *t) const {
 	return Utilities::taxicabDistance(this->r, this->c, t->getR(), t->getC());
 }
 
-std::vector<Tile*> Tile::getNeighbours() const {
-	std::vector<Tile*> neighbours;
-	for (int dr = -1; dr <= 1; dr++) {
-		for (int dc = -1; dc <= 1; dc++) {
-			Tile *t = Game::getInstance()->getFloor()->getTile(this->getR() + dr, this->getC() + dc);
-			if (t) {
-				neighbours.push_back(t);
+const std::vector<Tile*>& Tile::getNeighbours() const {
+	static bool calculated = false;
+	static std::vector<Tile*> neighbours;
+	if (!calculated) {
+		for (int dr = -1; dr <= 1; dr++) {
+			for (int dc = -1; dc <= 1; dc++) {
+				Tile *t = Game::getInstance()->getFloor()->getTile(this->getR() + dr, this->getC() + dc);
+				if (t) {
+					neighbours.push_back(t);
+				}
 			}
 		}
+		calculated = true;
 	}
 	return neighbours;
 }
