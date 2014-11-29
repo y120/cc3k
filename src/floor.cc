@@ -7,22 +7,11 @@
 #include "tileType.h"
 #include "abstractItem.h"
 #include "abstractPotion.h"
-#include "rhPotion.h"
-#include "baPotion.h"
-#include "bdPotion.h"
-#include "phPotion.h"
-#include "waPotion.h"
-#include "wdPotion.h"
+#include "basePotions.h"
 #include "goldPile.h"
 #include "dragonHoard.h"
 #include "abstractEnemy.h"
-#include "human.h"
-#include "dwarf.h"
-#include "halfling.h"
-#include "elf.h"
-#include "orc.h"
-#include "merchant.h"
-#include "dragon.h"
+#include "baseEnemies.h"
 
 /**
  *	Constructor. Initialise passages and # of goldPiles / potions. The chambers,
@@ -30,9 +19,30 @@
  *	will reserve space for the vectors.
  */
 Floor::Floor() : goldPiles(0), potions(0), passages(new Chamber()) {
+	passages->setFloor(this);
 	this->chambers.reserve(Game::getInstance()->getMaxChambers());
 	this->enemies.reserve(Game::getInstance()->getMaxEnemies());
 	this->items.reserve(Game::getInstance()->getMaxPotions() + Game::getInstance()->getMaxGoldPiles());
+}
+
+/**
+ *	Constructs a floor from an input stream
+ */
+Floor::Floor(std::istream &iss) : Floor() {
+	int row = 25, col = 79;
+	std::vector<std::string> store;
+	for (int l0 = 0; l0 < row; l0++) {
+		getline(iss, store[l0]);
+	}
+	for (int l0 = 1; l0 < row - 1; l0++) {
+		for (int l1 = 1; l1 < col - 1; l1++) {
+			if (store[l0][l1] == '#') {
+				this->addPassage(new Tile(l0, l1, TileType::PassageTile));
+			} else if (store[l0][l1] != '.') {
+				this->addChamber(new Chamber(store, row, col));
+			}
+		}
+	}
 }
 
 /**
@@ -78,6 +88,7 @@ void Floor::generateExit() {
 void Floor::addChamber(Chamber *chamber) {
 	this->chambers.push_back(chamber);
 	chamber->setId(this->chambers.size());
+	chamber->setFloor(this);
 }
 
 /**
@@ -111,8 +122,9 @@ Chamber *Floor::getPassages() const {
 /**
  *	Registers an Enemy to this floor.
  */
-void Floor::addEnemy(AbstractEnemy *enemy) {
+AbstractEnemy *Floor::addEnemy(AbstractEnemy *enemy) {
 	this->enemies.push_back(enemy);
+	return enemy;
 }
 
 /**
@@ -167,7 +179,7 @@ void Floor::generateEnemy() {
 /**
  *	Adds an item to the item list.
  */
-void Floor::addItem(AbstractItem *item) {
+AbstractItem *Floor::addItem(AbstractItem *item) {
 	// If it's a goldPile, increment that count.
 	if (dynamic_cast<GoldPile*>(item)) {
 		this->goldPiles++;
@@ -175,6 +187,7 @@ void Floor::addItem(AbstractItem *item) {
 		this->potions++;
 	}
 	this->items.push_back(item);
+	return item;
 }
 
 /**
@@ -321,11 +334,12 @@ Chamber *Floor::getChamber(Tile *tile) const {
  *	Renders all chambers on the floor
  */
 void Floor::render() {
-	for (int l0 = 0; l0 < (int)chambers.size(); l0++) {
-		if (chambers[l0]) {
-			chambers[l0]->render();
+	for (int l0 = 0; l0 < (int)this->chambers.size(); l0++) {
+		if (this->chambers[l0]) {
+			this->chambers[l0]->render();
 		}
 	}
+	this->passages->render();
 }
 
 /**

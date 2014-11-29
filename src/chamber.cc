@@ -1,14 +1,105 @@
 #include "chamber.h"
 #include "game.h"
 #include "player.h"
+#include "baseEnemies.h"
+#include "basePotions.h"
+#include "goldPile.h"
 #include "tile.h"
 #include "tileType.h"
 #include <vector>
+#include <iostream>							// for cerr
 
 /**
  *	Constructor: set id (if any).
  */
-Chamber::Chamber(int id) : id(id) {}
+Chamber::Chamber(int id) : id(id), floor(NULL) {}
+
+/**
+ *	Constructs a chamber from a loaded string vector position (r,c)
+ */
+Chamber::Chamber(std::vector<std::string> &store, int r, int c)
+	: Chamber(-1)
+{
+	TileType tt = TileType::NoTile;
+	Renderable *thing = NULL;
+	if (store[r][c] == '.') {
+		tt = TileType::FloorTile;
+	} else if (store[r][c] == '|' || store[r][c] == '-') {
+		tt = TileType::WallTile;
+	} else if (store[r][c] == '+') {
+		tt = TileType::DoorTile;
+	} else if (store[r][c] == '#') {		// Should never happen
+		tt = TileType::PassageTile;
+	} else if (store[r][c] == '\\' || store[r][c] == '/') {
+		tt = TileType::ExitTile;
+	} else {
+		tt = TileType::FloorTile;
+		switch (store[r][c]) {
+			case '@':
+				thing = Game::getInstance()->getPlayer();
+				break;
+			case 'H':
+				thing = this->getFloor()->addEnemy(new Human());
+				break;
+			case 'W':
+				thing = this->getFloor()->addEnemy(new Dwarf());
+				break;
+			case 'E':
+				thing = this->getFloor()->addEnemy(new Elf());
+				break;
+			case 'O':
+				thing = this->getFloor()->addEnemy(new Orc());
+				break;
+			case 'M':
+				thing = this->getFloor()->addEnemy(new Merchant());
+				break;
+			case 'D':
+				//thing = this->getFloor()->addEnemy(new Dragon());
+				break;
+			case 'L':
+				thing = this->getFloor()->addEnemy(new Halfling());
+				break;
+			case 'P':
+				std::cerr << "Random Potion in map file not implemented\n";
+				break;
+			case 'G':
+				std::cerr << "Random Goldpile in map file not implemented\n";
+				break;
+			case '0':
+				thing = this->getFloor()->addItem(new RHPotion());
+				break;
+			case '1':
+				thing = this->getFloor()->addItem(new BAPotion());
+				break;
+			case '2':
+				thing = this->getFloor()->addItem(new BDPotion());
+				break;
+			case '3':
+				thing = this->getFloor()->addItem(new PHPotion());
+				break;
+			case '4':
+				thing = this->getFloor()->addItem(new WAPotion());
+				break;
+			case '5':
+				thing = this->getFloor()->addItem(new WDPotion());
+				break;
+			case '6':
+				thing = this->getFloor()->addItem(new GoldPile(GoldPile::NormalPile));
+				break;
+			case '7':
+				thing = this->getFloor()->addItem(new GoldPile(GoldPile::SmallPile));
+				break;
+			case '8':
+				thing = this->getFloor()->addItem(new GoldPile(GoldPile::MerchantHoard));
+				break;
+			case '9':
+				thing = this->getFloor()->addItem(new GoldPile(GoldPile::DragonHoard));
+				break;
+		}
+	}
+
+	this->addTile(r, c, tt, thing);
+}
 
 /**
  *	Memory management on the Tiles is tied to the Chamber. The destructor will
@@ -31,6 +122,7 @@ void Chamber::addTile(int r, int c, TileType tt, Renderable *re) {
 	// the case anyway, but it doesn't hurt to check...
 	if (this->tiles.count(p) == 0) {
 		this->tiles[p] = new Tile(r, c, tt, re);
+		this->tiles[p]->setChamber(this);
 	}
 }
 
@@ -43,6 +135,7 @@ void Chamber::addTile(Tile *t) {
 	// the case anyway, but it doesn't hurt to check...
 	if (this->tiles.count(p) == 0) {
 		this->tiles[p] = t;
+		this->tiles[p]->setChamber(this);
 	}
 }
 
@@ -90,6 +183,14 @@ int Chamber::getId() const {
 }
 void Chamber::setId(int id) {
 	this->id = id;
+}
+
+// Getter and setter for parent Floor
+Floor *Chamber::getFloor() const {
+	return floor;
+}
+void Chamber::setFloor(Floor *fl) {
+	floor = fl;
 }
 
 /**

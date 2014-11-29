@@ -1,6 +1,7 @@
 #ifndef __FLOOR_H__
 #define __FLOOR_H__
 
+#include <iostream>
 #include <vector>
 
 class Chamber;
@@ -11,6 +12,7 @@ class AbstractItem;
 class Floor {
 public:
 	Floor();
+	Floor(std::istream &);
 	~Floor();
 
 	void generateExit();
@@ -22,10 +24,10 @@ public:
 	void addPassage(Tile*);
 	Chamber *getPassages() const;
 
-	void addEnemy(AbstractEnemy*);
+	AbstractEnemy *addEnemy(AbstractEnemy*);
 	void generateEnemy();
 
-	void addItem(AbstractItem*);
+	AbstractItem *addItem(AbstractItem*);
 	void generatePotion();
 	void generateGoldPile();
 

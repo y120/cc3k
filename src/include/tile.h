@@ -6,6 +6,7 @@
 #include "renderable.h"
 #include "tileType.h"
 
+class Chamber;
 
 class Tile : public Renderable {
 public:
@@ -34,8 +35,8 @@ public:
 	std::vector<Tile*> getNeighbours() const;
 	std::vector<Tile*> getUnoccupiedNeighbours() const;
 
-	//int getChamber() const;
-	//void setChamber(int);
+	Chamber *getChamber() const;
+	void setChamber(Chamber *);
 
 	// Changed display code - render() no longer returns a string
 	//std::string render();
@@ -43,7 +44,7 @@ public:
 	void render();
 
 private:
-	//int chamber;
+	Chamber *chamber;
 	TileType tt;
 	Renderable *contents;
 };

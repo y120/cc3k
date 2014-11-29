@@ -4,8 +4,8 @@
 #include "game.h"
 #include "floor.h"
 
-Tile::Tile(int r, int c, TileType tt, Renderable *contents) : Renderable(r, c), tt(tt),
-	contents(contents) {}
+Tile::Tile(int r, int c, TileType tt, Renderable *contents)
+	: Renderable(r, c), chamber(NULL), tt(tt), contents(contents) {}
 
 // Note: we do not delete the contents on destruction, since this will be
 // handled elsewhere.
@@ -100,6 +100,14 @@ std::vector<Tile*> Tile::getUnoccupiedNeighbours() const {
 		}
 	}
 	return unoccupied;
+}
+
+Chamber *Tile::getChamber() const {
+	return chamber;
+}
+
+void Tile::setChamber(Chamber *ch) {
+	chamber = ch;
 }
 
 void Tile::render() {
