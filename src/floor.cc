@@ -13,6 +13,10 @@
 #include "abstractEnemy.h"
 #include "baseEnemies.h"
 
+#include <iostream>
+#include <queue>
+#include <functional>
+
 /**
  *	Constructor. Initialise passages and # of goldPiles / potions. The chambers,
  *	enemies, and items vectors will initialise automatically to empty, but we
@@ -328,6 +332,309 @@ Chamber *Floor::getChamber(int r, int c) const {
  */
 Chamber *Floor::getChamber(Tile *tile) const {
 	return tile == NULL ? NULL : this->getChamber(tile->getR(), tile->getC());
+}
+
+/**
+ *	Randomly generates the floor layout. First clears all chambers.
+ *
+ *	We do this by first selecting five "seeds" -- these are where the chambers
+ *	will be generated from. We then grow these out for an appropriate amount of
+ *	time.
+ *
+ *	For this, we pretend the board is 75x21 (to have a nice buffer area!) and
+ *	ensure that when growing each room, we do not infringe on any neighbouring
+ *	areas. (All neighbouring tiles become 'owned' by a room when a tile is
+ *	generated.)
+ */
+void Floor::generate() {
+	using namespace std;
+
+	// Approximate desired size. Can generate larger or smaller.
+	const int REQUIRED = 90;
+	const int DESIRED = 130;
+	const int MAXIMUM = 150;
+
+	const int MAX_ROWS = 21;
+	const int MAX_COLS = 75;
+
+	/**
+	 *	Returns the chance of generating another tile, in percentage.
+	 *
+	 *	Until we have sqrt(desired), always generate a tile.
+	 *	Otherwise, the chance should gradually get smaller, such that there is
+	 *	a 50% chance of generation when size = desired.
+	 */
+	auto getGenerationChance = [=] (int size) {
+		if (size < REQUIRED) {
+			return 100;
+		} else if (size > MAXIMUM) {
+			return 0;
+		} else {
+			int d = DESIRED - size;
+			return 50 + d;
+		}
+	};
+
+	// A tile owned by a Chamber can only be used by that chamber.
+	int owner[MAX_ROWS][MAX_COLS] = {};
+	// Contains a representation of the board (easy printing).
+	char board[MAX_ROWS][MAX_COLS] = {};
+	// Whether a tile is a vertical wall or not.
+	bool vert[MAX_ROWS][MAX_COLS] = {};
+
+	// Returns true if r, c is actually in bounds.
+	auto inBounds = [] (int r, int c) {
+		return r >= 0 && c >= 0 && r < MAX_ROWS && c < MAX_COLS;
+	};
+
+	// Sets a tile and its 9 surrounding tiles as owned by a specific chamber.
+	// The further surrounding whatever are marked as owned by nobody (-1).
+	auto markOwned = [=, &owner] (pair<int, int> pii, int n) {
+		int r = pii.first, c = pii.second;
+		/*for (int dr = -2; dr <= 2; dr++) {
+			for (int dc = -2; dc <= 2; dc++) {
+				int nr = r + dr, nc = c + dc;
+				if (inBounds(nr, nc) && !board[nr][nc]) {
+					owner[nr][nc] = -1;
+				}
+			}
+		}*/
+		owner[r][c] = n + 1;
+		/*for (int dr = -1; dr <= 1; dr++) {
+			for (int dc = -1; dc <= 1; dc++) {
+				int nr = r + dr, nc = c + dc;
+				if (inBounds(nr, nc) && owner[nr][nc] < 1) {
+					owner[nr][nc] = n + 1;
+				}
+			}
+		}*/
+	};
+
+	// Contains the next points to consider.
+	queue<pair<int, int> > next[5];
+	// Contains the actual positions decided upon.
+	vector<pair<int, int> > tiles[5];
+	// Contains the passages. Passages will grow toward doors or other
+	// passages, and away from walls.
+	vector<pair<int, int> > passages;
+
+	// Select five random seeds.
+	/*for (int i = 0; i < 5; i++) {
+		// Choose the r and c. We need to make sure we don't start off with an
+		// owned cell.
+		int r, c;
+		do {
+			r = Game::getInstance()->rand(MAX_ROWS);
+			c = Game::getInstance()->rand(MAX_COLS);
+		} while (owner[r][c]);
+		pair<int, int> pii = make_pair(r, c);
+		markOwned(pii, i);
+		cout << "Seed " << i << " : " << pii.first << " " << pii.second << endl;
+		next[i].push(pii);
+	}*/
+	pair<int, int> seeds[] = {{4, 20}, {5, 65}, {16, 10}, {17, 55}, {11, 38}};
+	// 30% chance to swap x-positions of 0 and 2, 1 and 4.
+	for (int i = 0; i < 2; i++) {
+		if (Game::getInstance()->rand(100) < 30) {
+			int t = seeds[i + 2].first;
+			seeds[i + 2].first = seeds[i].first;
+			seeds[i].first = t;
+		}
+	}
+	for (int i = 0; i < 5; i++) {
+		pair<int, int> seed = seeds[i];
+		seed.first += Game::getInstance()->rand(-3, 3);
+		seed.second += Game::getInstance()->rand(-8, 8);
+		next[i].push(seed);
+	}
+	/*next[0].push(make_pair(3, 20));
+	next[1].push(make_pair(3, 65));
+	next[2].push(make_pair(18, 10));
+	next[3].push(make_pair(18, 55));
+	next[4].push(make_pair(11, 38));*/
+
+	int dr[] = {-1, +1, +0, +0};
+	int dc[] = {+0, +0, -1, +1};
+	// Now, grow everything! done holds the number of completed chambers.
+	for (bool allEmpty = false; !allEmpty;) {
+		allEmpty = true;
+
+		// curChamber is the chamber we're currently considering
+		for (int curChamber = 0; curChamber < 5; curChamber++) {
+			// Check emptiness first.
+			if (next[curChamber].empty()) {
+				continue;
+			} else {
+				allEmpty = false;
+			}
+
+			// The current tile to consider.
+			pair<int, int> curPos = next[curChamber].front();
+			next[curChamber].pop();
+			int chance = getGenerationChance(tiles[curChamber].size());
+			int curOwner = owner[curPos.first][curPos.second];
+
+			// First, see if we are even allowed to use this one. (It's possible
+			// that a neighbouring tile was sniped recently, or that we're
+			// checking the same thing twice!
+			if ((curOwner && curOwner != curChamber + 1) || board[curPos.first][curPos.second]) {
+				if(0&&curChamber==1)cout<<"can't use, owned by "<<curOwner<<endl;
+				continue;
+			}
+			//cout << "cursize: " << tiles[curChamber].size() << "; chance: " << chance << endl;
+			// Then check if we decide to use this or not.
+			if (Game::getInstance()->rand(100) >= chance) {
+			if (0&&curChamber==1)cout<<"Reject!"<<endl;
+				continue;
+			}
+
+			if (0&&curChamber==1)
+			cout << "Take " << curPos.first << " " << curPos.second << " for " << curChamber << endl;
+
+			// We've decided to use it, so add it to the list of actual tiles
+			// and mark this (and its neighbours) as owned.
+			tiles[curChamber].push_back(curPos);
+			board[curPos.first][curPos.second] = '.'; // '0' + curChamber;
+			markOwned(curPos, curChamber);
+
+			bool used[4] = {};
+
+			for (int j = 0; j < 4; j++) {
+				// For each direction, we randomly decide whether or not we will
+				// even consider that Tile.
+				/*if (Game::getInstance()->rand(100) >= chance) {
+					continue;
+				}*/
+				int i;
+				do {
+					i = Game::getInstance()->rand(4);
+					// Make horizontal growth marginally more likely
+					if (i < 2 && !Game::getInstance()->rand(2)) {
+						i += 2;
+					}
+				} while (used[i]);
+				used[i] = true;
+
+				pair<int, int> nextPos(curPos);
+				nextPos.first += dr[i];
+				nextPos.second += dc[i];
+				if (!inBounds(nextPos.first, nextPos.second)) {
+					continue;
+				}
+				int nextOwner = owner[nextPos.first][nextPos.second];
+				if (0&&curChamber == 1)
+				cerr << "Consider " << nextPos.first << " " << nextPos.second << " for " << curChamber << " (owned by " << nextOwner << ")\n";
+
+				// If this tile isn't owned by somebody else, then we add it to
+				// our list for future consideration.
+				if (!nextOwner || nextOwner == curChamber + 1) {
+					next[curChamber].push(nextPos);
+				}
+			}
+		} // for curChamber
+	} // for allEmpty
+
+	// Syntactic sugar for iteration over the board.
+	auto iterate = [=, &board] (function<bool(int, int)> cond, function<void(int, int, int, int)> expr) {
+		for (int r = 0; r < MAX_ROWS; r++) {
+			for (int c = 0; c < MAX_COLS; c++) {
+				if (cond(r, c)) {
+					for (int dr = -1; dr <= 1; dr++) {
+						for (int dc = -1; dc <= 1; dc++) {
+							int nr = r + dr, nc = c + dc;
+							if (inBounds(nr, nc)) {
+								expr(r, c, nr, nc);
+							}
+						}
+					}
+				}
+			}
+		}
+	};
+
+	// Postprocess step 1: remove floor tiles next to floor tiles of a different
+	// chamber by replacing with empty space.
+	iterate([=] (int r, int c) { return board[r][c] == '.'; },
+		[=, &board] (int r, int c, int nr, int nc) {
+
+		if (board[nr][nc] == '.' && owner[r][c] != owner[nr][nc]) {
+			if (Game::getInstance()->rand(2)) {
+				board[r][c] = 0;
+			} else {
+				board[nr][nc] = 0;
+			}
+		}
+	});
+
+	// Step 2: transform floor tiles bordering empty space into walls
+	iterate([=, &board] (int r, int c) {
+		if (r == 0 || c == 0 || r == MAX_ROWS - 1 || c == MAX_COLS - 1) {
+			board[r][c] = '|';
+			return false;
+		}
+		return board[r][c] == '.';
+	}, [=, &board] (int r, int c, int nr, int nc) {
+		if (board[nr][nc] == 0) {
+			board[r][c] = '|';
+		}
+	});
+	// Step 3: transform walls not bordering floor tiles into empty space (i.e.
+	// pruning), and mark walls as either vertical or horizontal.
+	for (int r = 0; r < MAX_ROWS; r++) {
+		for (int c = 0; c < MAX_COLS; c++) {
+			if (board[r][c] == '|') {
+				bool shouldRemove = true;
+				for (int dr = -1; dr <= 1; dr++) {
+					for (int dc = -1; dc <= 1; dc++) {
+						int nr = r + dr, nc = c + dc;
+						if (!inBounds(nr, nc)) {
+							continue;
+						}
+						if (board[nr][nc] == '.') {
+							shouldRemove = false;
+						} else if (board[nr][nc] == '|' && dr && !dc) {
+							vert[r][c] = true;
+						}
+					}
+				}
+				if (shouldRemove) {
+					board[r][c] = 0;
+				}
+			}
+			if (board[r][c] == 0) {
+				cout << ' ';
+			} else if (board[r][c] == '|') {
+				cout << (vert[r][c] ? '|' : '-');
+			} else {
+				cout << board[r][c];
+			}
+		}
+		cout << endl;
+	}
+//*/
+}
+
+/**
+ *	Populates the Floor. Sets PC position as well.
+ */
+void Floor::fill() {
+	// Player Character location.
+	Tile *tile = this->getRandomUnoccupiedTile();
+	Game::getInstance()->getPlayer()->moveTo(tile);
+	// Stairway location.
+	this->generateExit();
+	// Potions
+	for (int i = 0; i < Game::getInstance()->getMaxPotions(); i++) {
+		this->generatePotion();
+	}
+	// Gold
+	for (int i = 0; i < Game::getInstance()->getMaxGoldPiles(); i++) {
+		this->generateGoldPile();
+	}
+	// Enemies
+	for (int i = 0; i < Game::getInstance()->getMaxEnemies(); i++) {
+		this->generateEnemy();
+	}
 }
 
 /**

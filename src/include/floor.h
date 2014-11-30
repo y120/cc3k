@@ -42,6 +42,11 @@ public:
 	Chamber *getChamber(int, int) const;
 	Chamber *getChamber(Tile*) const;
 
+	// Generates the entire Floor (including layout).
+	void generate();
+	// Fills the Floor with stuff.
+	void fill();
+
 	void render();
 
 protected:
