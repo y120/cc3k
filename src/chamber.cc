@@ -123,9 +123,11 @@ void Chamber::setFloor(Floor *fl) {
 
 /**
  *	Fills the given Chamber ptr with stuff from the string vector
+ *
+ *	NOTE: * represents a processed dragonHoard.
  */
 Tile *Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
-	if (store[r][c] == ' ') {
+	if (store[r][c] == ' ' || store[r][c] == '*') {
 		// if we've already visited it, just return the tile reference
 		return getTile(r, c);
 	}
@@ -168,17 +170,26 @@ Tile *Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 				thing = this->getFloor()->addEnemy(new Merchant());
 				break;
 			case 'D': {
-				Tile *hoard = NULL;
+				Tile *hoardTile = NULL;
+std::cerr << "Dragon at " << r << " " << c << "!\n";
 				for (int dr = -1; dr <= 1; dr++) {
 					for (int dc = -1; dc <= 1; dc++) {
 						if (!(dr == 0 && dc == 0)) {
-							if (store[r][c] == '9') {
-								hoard = floodFill(store, r + dr, c + dc);
+							if (store[r + dr][c + dc] == '9' || store[r + dr][c + dc] == '*') {
+								hoardTile = floodFill(store, r + dr, c + dc);
+								store[r + dr][c + dc] = ' ';
+std::cerr << "Dpos: " << r << " " << c << "; hoard: " << r + dr << " " << c + dc << '\n';
 							}
 						}
 					}
 				}
-				thing = this->getFloor()->addEnemy(new Dragon(hoard));
+				thing = this->getFloor()->addEnemy(new Dragon(hoardTile));
+				if (hoardTile) {
+					DragonHoard *dh = dynamic_cast<DragonHoard*>(hoardTile->getContents());
+					if (dh) {
+						dh->setDragon(static_cast<Dragon*>(thing));
+					}
+				}
 				break;
 			}
 			case 'L':
@@ -218,6 +229,7 @@ Tile *Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 				thing = this->getFloor()->addItem(new GoldPile(GoldPile::MerchantHoard));
 				break;
 			case '9':
+std::cerr << "Hoard at " << r << " " << c << "!\n";
 				thing = this->getFloor()->addItem(new DragonHoard());
 				break;
 		}
@@ -229,7 +241,7 @@ Tile *Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 		// don't recurse if it's currently a wall or a door
 		return tilePtr;
 	}
-	store[r][c] = ' ';
+	store[r][c] = store[r][c] == '9' ? '*' : ' ';
 
 	for (int dr = -1; dr <= 1; dr++) {
 		for (int dc = -1; dc <= 1; dc++) {

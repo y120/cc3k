@@ -15,6 +15,8 @@ public:
 	static void setHostile(bool);
 	static bool isHostile();
 
+	void die();
+
 	void doTurn();
 
 private:

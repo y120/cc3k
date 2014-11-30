@@ -1,6 +1,10 @@
 #include "merchant.h"
 #include "game.h"
 #include "player.h"
+#include "goldPile.h"
+#include "turnSummary.h"
+#include "tile.h"
+#include <sstream>
 
 bool Merchant::hostile = false;
 
@@ -76,4 +80,33 @@ void Merchant::doTurn() {
 			}
 		}
 	}
+}
+
+/**
+ *	Merchants drop a MerchantHoard on death.
+ */
+void Merchant::die() {
+	Tile *tile = this->getTile();
+	GoldPile::GoldPileSize gps = GoldPile::MerchantHoard;
+
+	if (Game::getInstance()->hasDLC(DLC::Inventory)) {
+		// With the Inventory DLC active, physically drop the GoldPile.
+		GoldPile *goldPile = new GoldPile(gps);
+		tile->setContents(goldPile);
+	} else {
+		// Without the Inventory DLC, add the gold directly.
+		int gold = static_cast<int>(gps);
+		Game::getInstance()->getPlayer()->addGold(gold);
+
+		// Also log it...
+		std::ostringstream oss;
+		oss << "Player picked up " << gold << " gold!";
+		TurnSummary::add(oss.str());
+
+		// ... and clear the Tile.
+		tile->setContents(NULL);
+	}
+
+	// Go up to the super.
+	Character::die();
 }

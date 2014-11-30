@@ -16,6 +16,8 @@ public:
 	void getHitBy(Player*);
 	void strike(Player*);
 
+	void die();
+
 	// Note: we could perform some logic on the GoldPile, but we don't need to,
 	// since it's implemented in DragonHoard!
 	void doTurn();

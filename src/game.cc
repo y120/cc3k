@@ -5,11 +5,13 @@
 #include "abstractEnemy.h"
 #include "floor.h"
 #include "dlc.h"
+#include "basePlayers.h"
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 #ifndef POTION_STRENGTH
 	#define POTION_STRENGTH 5
@@ -99,17 +101,84 @@ Floor *Game::getFloor(int floor) const {
 	return this->floors[floor - 1];
 }
 
-Player *Game::titleScreen() {
-	/** TODO **/
-	return player;
+namespace {
+	void displayMenu() {
+		using std::cout;
+		std::string desc[] = {
+			"Generated DLC (randomly generated dungeons)",
+			"Inventory DLC (store and use items later"
+		};
+		cout << "ChamberCrawler3000 Main Menu\n\n";
+
+		// DLC select
+		cout << "Enter a number to enable or disable that DLC, or a race to start.\n\n";
+		for (int i = 0; i < static_cast<int>(DLC::LAST); i++) {
+			cout << "[";
+			cout << (Game::getInstance()->hasDLC(static_cast<DLC>(i)) ? 'X' : ' ');
+			cout << "] " << i << ": " << desc[i] << "\n";
+		}
+
+		// Race select
+		cout << "\n\nRaces:\n";
+		cout << "s: Shade. No special bonus.\n";
+		cout << "d: Drow. Potions are more impactful.\n";
+		cout << "v: Vampire. Steal HP on hit.\n";
+		cout << "g: Goblin. Get an extra 5 gold every time you kill.\n";
+		cout << "t: Troll. Regenerate health every turn.\n";
+		cout << "\nPress q to quit.\n\n";
+	}
 }
 
-void Game::loop() {
+Player* Game::titleScreen() {
+	using std::cout;
+	using std::cin;
+	while (true) {
+		displayMenu();
+		char ch;
+		cout << "\nYour input: ";
+		cin >> ch;
+		switch (ch) {
+			case 's': return new Shade();
+			case 'd': return new Drow();
+			case 'v': return new Vampire();
+			case 'g': return new Goblin();
+			case 't': return new Troll();
+			case 'q': return NULL;
+		}
+		int dlcNum = ch - '0';
+		if (dlcNum >= 0 && dlcNum < static_cast<int>(DLC::LAST)) {
+			DLC dlc = static_cast<DLC>(dlcNum);
+			this->setDLC(dlc, !this->hasDLC(dlc));
+		}
+	};
+}
+
+
+void Game::loop(std::string floorFile) {
 	while ((player = titleScreen()) != NULL) {
 		gameOver(false);
 		Display::getInstance()->addMessage("Player character has spawned.");
+
+		// If no floor is specified, then behaviour depends on whether the Generated
+		// DLC is loaded. If so, generate; otherwise, load the default
+		if (floorFile == "") {
+			if (Game::getInstance()->hasDLC(DLC::Generated)) {
+				for (int i = 1; i <= 5; i++) {
+					Game::getInstance()->getFloor(i)->generate();
+				}
+			} else {
+				Game::getInstance()->load("cc3kempty.txt");
+				for (int i = 1; i <= 5; i++) {
+					Game::getInstance()->getFloor(i)->fill();
+				}
+			}
+		} else {
+			Game::getInstance()->load(floorFile);
+		}
+		Game::getInstance()->initFloor(1);
+
 		while (!gameOver()) {
-			render();;
+			render();
 			getInput();
 			std::vector<AbstractEnemy*> &flEnemies = getFloor()->getEnemies();
 			std::cerr << &flEnemies << std::endl;
@@ -164,10 +233,9 @@ void Game::render() {
 	//std::cerr << "Game: render " << std::endl;
 	this->getFloor()->render();
 	// draw border
-	Display::getInstance()->draw("|-----------------------------------------------------------------------------|",
-		 0, 0);
-	Display::getInstance()->draw("|-----------------------------------------------------------------------------|",
-		 24, 0);
+	std::string border = "|-----------------------------------------------------------------------------|";
+	Display::getInstance()->draw(border, 0, 0);
+	Display::getInstance()->draw(border, 24, 0);
 	for (int l0 = 0; l0 < 25; l0++) {
 		// draw border edges
 		Display::getInstance()->draw("|", l0, 0);

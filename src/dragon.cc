@@ -57,6 +57,13 @@ void Dragon::doTurn() {
 }
 
 /**
+ *	Dragons don't drop gold on death.
+ */
+void Dragon::die() {
+	Character::die();
+}
+
+/**
  *	Dragons can hit the Player if they're within 1 tile of themselves or their
  *	treasure hoard.
  */
@@ -67,8 +74,9 @@ bool Dragon::canHitPlayer() const {
 		Utilities::distance(this->getR(), this->getC(),
 				Game::getInstance()->getPlayer()->getR(), Game::getInstance()->getPlayer()->getC()),
 		// distance to my hoard
-		Utilities::distance(this->hoard->getR(), this->hoard->getC(),
+		this->hoard ? Utilities::distance(this->hoard->getR(), this->hoard->getC(),
 				Game::getInstance()->getPlayer()->getR(), Game::getInstance()->getPlayer()->getC())
+				: 0
 	);
 	return distance <= 1;
 }

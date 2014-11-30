@@ -35,7 +35,7 @@ public:
 
 	// The main game loop.
 	Player *titleScreen();
-	void loop();
+	void loop(std::string);
 	void getInput();
 	void nextLevel();
 	void renderUi();
