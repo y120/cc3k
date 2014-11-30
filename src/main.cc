@@ -1,22 +1,27 @@
+/*
 #include "game.h"
 #include "basePlayers.h"
 
 using namespace std;
 
 int main() {
-	cerr << "1\n";
+	//cerr << "1\n";
 	Game::getInstance()->load("cc3kfloor.txt");
-	cerr << "2\n";
+	//cerr << "2\n";
 	Game::getInstance()->setPlayer(new Shade());
-	cerr << "3\n";
+	//cerr << "3\n";
 	Game::getInstance()->initFloor(1);
-	cerr << "4\n";
+	//cerr << "4\n";
 	Game::getInstance()->render();
-	cerr << "5\n";
+	//cerr << "5\n";
+	Game::cleanup();
 	return 0;
 }
 
-/*#include "floor.h"
+/*
+*/
+#include "game.h"
+#include "floor.h"
 #include <ctime>
 #include <cstdio>
 
@@ -27,4 +32,5 @@ int main() {
 	Floor f;
 	f.generate();
 	printf("Seed: %d\n", seed);
-}*/
+}
+//*/

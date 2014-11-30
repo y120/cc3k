@@ -670,11 +670,11 @@ int Floor::getPlayerC() const {
 void Floor::render() {
 	for (int l0 = 0; l0 < (int)this->chambers.size(); l0++) {
 		if (this->chambers[l0]) {
-			std::cerr << "Floor: render chamber " << l0 << std::endl;
+			//std::cerr << "Floor: render chamber " << l0 << std::endl;
 			this->chambers[l0]->render();
 		}
 	}
-	std::cerr << "Floor: render passages " << std::endl;
+	//std::cerr << "Floor: render passages " << std::endl;
 	this->passages->render();
 }
 

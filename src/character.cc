@@ -10,7 +10,7 @@
 // character.cc is considered self-explanatory.
 
 // Protected constructor, does nothing. (impl left NULL.)
-Character::Character() {}
+Character::Character() : pImpl(NULL) {}
 
 Character::Character(int maxhp, int atk, int def, int dodge) :
 	hit(false), pImpl(new CharacterImpl()) {

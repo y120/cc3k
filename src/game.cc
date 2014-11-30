@@ -28,6 +28,9 @@
 Game *Game::instance = NULL;
 
 Game::Game() : player(NULL), currentFloor(0), potionModifier(1) {
+	for (int i = 0; i < 5; i++) {
+		this->floors[i] = NULL;
+	}
 	// NOTE: We cannot initialise Floors here because that introduces infinite
 	// recursion... oops!
 	// currentFloor 0 is invalid. We must call initFloor(1) once
@@ -43,9 +46,6 @@ Game::~Game() {
 Game* Game::getInstance() {
 	if (!Game::instance) {
 		Game::instance = new Game();
-		for (int i = 0; i < 5; i++) {
-			Game::instance->floors[i] = new Floor();
-		}
 		atexit(Game::cleanup);
 	}
 	return Game::instance;
@@ -73,7 +73,7 @@ Player* Game::getPlayer() {
 }
 
 void Game::setPlayer(Player *player) {
-	std::cerr << "Game - setting player:" << player << std::endl;
+	//std::cerr << "Game - setting player:" << player << std::endl;
 	this->player = player;
 }
 
@@ -100,7 +100,7 @@ void Game::loop() {
 }
 
 void Game::render() {
-	std::cerr << "Game: render " << std::endl;
+	//std::cerr << "Game: render " << std::endl;
 	floors[currentFloor]->render();
 	Display::getInstance()->render();
 }

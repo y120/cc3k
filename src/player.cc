@@ -12,7 +12,7 @@ namespace {
 }
 
 // Protected constructor, does nothing.
-Player::Player() {
+Player::Player() : inventory(NULL) {
 	setPlayerSprite(this);
 }
 
@@ -21,7 +21,7 @@ Player::Player() {
  *	creates the inventory.
  */
 Player::Player(int hp, int atk, int def) : Character(hp, atk, def, 50), score(0),
-	gold(0) {
+	gold(0), inventory(NULL) {
 	setPlayerSprite(this);
 	if (Game::getInstance()->hasDLC(DLC::Inventory)) {
 		this->inventory = new Inventory();

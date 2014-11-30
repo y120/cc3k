@@ -209,7 +209,6 @@ void Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 	} else {
 		tilePtr->setSprite(std::string(1, store[r][c]));
 	} /**/ // Old and outdated; Use tile->render() to take care of types
-	
 
 	// Recursively apply to all neighbours
 	if (store[r][c] == '|' || store[r][c] == '-' || store[r][c] == '+') {
