@@ -20,7 +20,7 @@ namespace {
  *	On initialisation, set the hoard that the Dragon guards.
  */
 Dragon::Dragon(Tile *hoard) : AbstractEnemy(150, 20, 20), hoard(hoard) {
-	setDragonSprite(this); 
+	setDragonSprite(this);
 }
 /*
  *	Note that we don't use a destructor because the Dragon does not own the

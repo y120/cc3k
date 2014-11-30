@@ -8,10 +8,10 @@ class DragonHoard;
 
 class Dragon : public AbstractEnemy {
 public:
-	//Dragon();
+	Dragon();
 	Dragon(Tile*);
 
-	//void setHoard(DragonHoard *);
+	void setHoard(DragonHoard *);
 
 	void getHitBy(Player*);
 	void strike(Player*);

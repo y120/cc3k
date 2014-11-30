@@ -108,17 +108,16 @@ void Game::loop() {
 	while ((player = titleScreen()) != NULL) {
 		gameOver(false);
 		while (!gameOver()) {
-			std::cerr << "gameloop - rendering\n";
-			render();
-			std::cerr << "gameloop - gettingInput\n";
+			render();;
 			getInput();
-			std::cerr << "gameloop - gettingFloor\n";
 			std::vector<AbstractEnemy*> &flEnemies = getFloor()->getEnemies();
 			std::cerr << &flEnemies << std::endl;
 			for (int l0 = 0; l0 < (int)flEnemies.size(); l0++) {
 				if ((flEnemies[l0] != NULL) && (!flEnemies[l0]->isDead())) {
 					std::cerr << "gameloop - enemy" << l0 << '-' << flEnemies[l0] << " doing turn\n";
+					std::cerr << flEnemies[l0]->getR() << ' ' << flEnemies[l0]->getC() << '\n';
 					flEnemies[l0]->doTurn();
+					std::cerr << "Gameloop - enemy done turn " << std::endl;
 				}
 			}
 		}
