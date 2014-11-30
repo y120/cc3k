@@ -135,5 +135,5 @@ bool AbstractEnemy::canMoveTo(int r, int c) const {
 }
 
 bool AbstractEnemy::canMoveTo(Tile *tile) const {
-	return tile->isPassableByEnemy();
+	return tile && tile->isPassableByEnemy();
 }

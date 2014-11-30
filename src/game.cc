@@ -240,5 +240,5 @@ int Game::rand(int max) {
 }
 
 int Game::rand(int min, int max) {
-	return this->rand(max + 1) + min;
+	return this->rand(max - min + 1) + min;
 }
