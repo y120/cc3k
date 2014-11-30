@@ -47,6 +47,9 @@ public:
 	// Fills the Floor with stuff.
 	void fill();
 
+	void setPlayerPos(int, int);
+	int getPlayerR() const;
+	int getPlayerC() const;
 	void render();
 
 protected:
@@ -56,6 +59,8 @@ private:
 	std::vector<Chamber*> chambers;
 	std::vector<AbstractEnemy*> enemies;
 	std::vector<AbstractItem*> items;
+	int playerR;
+	int playerC;
 
 	// We count how many goldPiles / potions we have on the floor solely for the
 	// purpose of generation.
