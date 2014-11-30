@@ -131,10 +131,10 @@ void Tile::render() {
 	// If graphics are implemented, remove the if statement as the
 	// tile ought to be rendered anyway
 	if (contents == NULL) {
-		getTileset()[getTileType()].move(this->getR(), this->getC());
+		getTileset()[getTileType()].moveSprite(this->getR(), this->getC());
 		getTileset()[getTileType()].render();
 	} else {
-		contents->move(this->getR(), this->getC());
+		contents->moveSprite(this->getR(), this->getC());
 		contents->render();
 	}
 }

@@ -19,7 +19,7 @@ public:
 	int getC() const;
 	void setName(const std::string &);
 	void setSprite(const std::string &);
-	void move(int row = 0, int col = 0);
+	void moveSprite(int row = 0, int col = 0);
 	virtual void render();
 };
 

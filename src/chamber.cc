@@ -70,6 +70,7 @@ Tile *Chamber::addTile(Tile *t) {
  *	Gets the Tile from the specified address, or NULL if not in this Chamber.
  */
 Tile *Chamber::getTile(int r, int c) const {
+	//std::cerr << "Chamber - gettingTile " << r << ' ' << c << "\n";
 	std::pair<int, int> p = std::make_pair(r, c);
 	if (this->tiles.count(p)) {
 		return this->tiles.at(p);

@@ -16,7 +16,7 @@ Player* selectPlayer();
  *	./cc3k <floorFile> <seed>
  */
 int main(int argc, char *argv[]) {
-	string floorFile;
+	string floorFile = "cc3kfloor.txt";
 	int seed = time(NULL);
 	if (argc >= 2) {
 		// Parameter one: the floor file.
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 	}
 	Game::getInstance()->setPlayer(p);
 	Game::getInstance()->initFloor(1);
-	Game::getInstance()->render();
+	Game::getInstance()->loop();
 	Game::cleanup();
 	return 0;
 }

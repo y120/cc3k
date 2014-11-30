@@ -132,26 +132,32 @@ void Character::setDodge(int dodge) {
 }
 
 void Character::move(int dr, int dc) {
+	std::cerr << "Character - move " << dr << ' ' << dc << '\n';
 	this->moveTo(this->getR() + dr, this->getC() + dc);
 }
 
 void Character::moveTo(int r, int c) {
+	std::cerr << "Character - moveTo " << r << ' ' << c << '\n';
 	Tile *newTile = Game::getInstance()->getFloor()->getTile(r, c);
 	this->moveTo(newTile);
 }
 
 void Character::moveTo(Tile *newTile) {
+	std::cerr << "Character - moveToTile " << newTile << '\n';
 	// First, check the newTile is valid.
 	if (newTile == NULL || newTile->isOccupied()) {
 		return;
 	}
-
+	std::cerr << "Character - moveToTile Valid\n";
 	// Then, clear the old tile (if any) and set the new one.
 	Tile *oldTile = this->getTile();
+	std::cerr << "Character - moveToTile got Tile\n";
 	if (oldTile != NULL) {
 		oldTile->setContents(NULL);
+		std::cerr << "Character - moveToTile set old to NULL\n";
 	}
 	newTile->setContents(this);
+	std::cerr << "Character - moveToTile Valid\n";
 	this->r = newTile->getR();
 	this->c = newTile->getC();
 }

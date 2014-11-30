@@ -51,6 +51,7 @@ bool Merchant::isHostile() {
  *	them. Otherwise, we move randomly.
  */
 void Merchant::doTurn() {
+	std::cerr << "Merchant - doingturn\n";
 	if (this->isHostile() && this->canHitPlayer()) {
 		this->strike(static_cast<Player*>(Game::getInstance()->getPlayer()));
 	} else {
@@ -61,7 +62,6 @@ void Merchant::doTurn() {
 				canMove |= this->canMove(dr, dc);
 			}
 		}
-
 		if (!canMove) {
 			return;
 		}
@@ -71,10 +71,12 @@ void Merchant::doTurn() {
 		while (true) {
 			int dr = Game::getInstance()->rand(-1, 1);
 			int dc = Game::getInstance()->rand(-1, 1);
+			std::cerr << "Merchant - while " << dr << ' ' << dc << '\n';
 			if (this->canMove(dr, dc)) {
 				this->move(dr, dc);
 				break;
 			}
 		}
 	}
+	std::cerr << "Merchant - done turn\n";
 }

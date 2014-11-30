@@ -41,7 +41,7 @@ void Renderable::setSprite(const string &spr) {
 	sprite = spr;
 }
 
-void Renderable::move(int row, int col) {
+void Renderable::moveSprite(int row, int col) {
 	r = row;
 	c = col;
 }

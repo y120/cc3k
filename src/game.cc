@@ -2,6 +2,7 @@
 #include "display.h"
 #include "abstractPlayerEffect.h"
 #include "player.h"
+#include "abstractEnemy.h"
 #include "floor.h"
 #include "dlc.h"
 #include <cmath>
@@ -28,7 +29,9 @@
 
 Game *Game::instance = NULL;
 
-Game::Game() : player(NULL), currentFloor(0), potionModifier(1) {
+Game::Game()
+	: bgameOver(false), player(NULL), currentFloor(0), potionModifier(1)
+{
 	// NOTE: We cannot initialise Floors here because that introduces infinite
 	// recursion... oops!
 	// currentFloor 0 is invalid. We must call initFloor(1) once
@@ -96,8 +99,45 @@ Floor *Game::getFloor(int floor) const {
 	return this->floors[floor - 1];
 }
 
+Player *Game::titleScreen() {
+	/** TODO **/
+	return player;
+}
+
 void Game::loop() {
-	// TODO
+	while ((player = titleScreen()) != NULL) {
+		gameOver(false);
+		while (!gameOver()) {
+			std::cerr << "gameloop - rendering\n";
+			render();
+			std::cerr << "gameloop - gettingInput\n";
+			getInput();
+			std::cerr << "gameloop - gettingFloor\n";
+			std::vector<AbstractEnemy*> &flEnemies = getFloor()->getEnemies();
+			std::cerr << &flEnemies << std::endl;
+			for (int l0 = 0; l0 < (int)flEnemies.size(); l0++) {
+				if ((flEnemies[l0] != NULL) && (!flEnemies[l0]->isDead())) {
+					std::cerr << "gameloop - enemy" << l0 << '-' << flEnemies[l0] << " doing turn\n";
+					flEnemies[l0]->doTurn();
+				}
+			}
+		}
+	}
+}
+
+void Game::getInput() {
+	std::string input;
+	std::cin >> input;
+}
+
+// called once player reaches last level
+void Game::nextLevel() {
+	if (currentFloor == 5) {
+		// YOU WIN!
+		gameOver(true);
+	} else {
+		initFloor(currentFloor + 1);
+	}
 }
 
 void Game::renderUi() {
@@ -136,6 +176,15 @@ void Game::render() {
 	}
 	renderUi();
 	Display::getInstance()->render();
+}
+
+bool Game::gameOver() {
+	return bgameOver;
+}
+
+bool Game::gameOver(bool set) {
+	bgameOver = set;
+	return bgameOver;
 }
 
 void Game::initFloor(int flr) {

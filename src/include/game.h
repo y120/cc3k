@@ -34,9 +34,14 @@ public:
 	Floor* getFloor(int) const;
 
 	// The main game loop.
+	Player *titleScreen();
 	void loop();
+	void getInput();
+	void nextLevel();
 	void renderUi();
 	void render();
+	bool gameOver();
+	bool gameOver(bool);
 
 	// Various helpers!
 	void load(std::string);
@@ -60,6 +65,7 @@ public:
 private:
 	static Game *instance;
 
+	bool bgameOver;
 	Player* player;
 	int currentFloor;
 	Floor *floors[5];

@@ -141,6 +141,7 @@ Chamber *Floor::getPassages() const {
  */
 AbstractEnemy *Floor::addEnemy(AbstractEnemy *enemy) {
 	this->enemies.push_back(enemy);
+	enemy->setFloor(getId());
 	return enemy;
 }
 
@@ -319,10 +320,18 @@ void Floor::generateGoldPile() {
 }
 
 /**
+ *	Accessor for ID member of Floor class
+ */
+int Floor::getId() const {
+	return id;
+}
+
+/**
  *	Gets a Tile, given row and column.
  *	If the Tile can't be found in a Chamber or a Passage, returns NULL.
  */
 Tile *Floor::getTile(int r, int c) const {
+	//std::cerr << "Floor - gettingTile " << r << ' ' << c << "\n";
 	Tile *tile = this->passages->getTile(r, c);
 	for (int i = 0; !tile && i < (int)this->chambers.size(); i++) {
 		tile = this->chambers[i]->getTile(r, c);
@@ -348,6 +357,13 @@ Chamber *Floor::getChamber(int r, int c) const {
  */
 Chamber *Floor::getChamber(Tile *tile) const {
 	return tile == NULL ? NULL : this->getChamber(tile->getR(), tile->getC());
+}
+
+/**
+ *	Accessor for the vector of enemies on the floor
+ */
+std::vector<AbstractEnemy*> &Floor::getEnemies() {
+	return enemies;
 }
 
 /**

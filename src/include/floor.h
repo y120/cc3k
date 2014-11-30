@@ -38,9 +38,11 @@ public:
 	 *			specified by (r, c).
 	 *		getChamber(Tile *t) returns the Chamber that owns the tile t.
 	 */
+	int getId() const;
 	Tile *getTile(int, int) const;
 	Chamber *getChamber(int, int) const;
 	Chamber *getChamber(Tile*) const;
+	std::vector<AbstractEnemy*> &getEnemies();
 
 	// Generates the entire Floor (including layout).
 	void generate();
