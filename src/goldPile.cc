@@ -1,7 +1,7 @@
 #include "goldPile.h"
 #include "game.h"
 #include "player.h"
-#include "turnSummary.h"
+#include "display.h"
 #include <sstream>
 
 namespace {
@@ -29,6 +29,5 @@ void GoldPile::pickUp() {
 
 	std::ostringstream oss;
 	oss << "Player picks up " << this->value << " gold.";
-	TurnSummary::add(oss.str());
+	Display::getInstance()->addMessage(oss.str());
 }
-

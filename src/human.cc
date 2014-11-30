@@ -4,7 +4,7 @@
 #include "player.h"
 #include "tile.h"
 #include "goldPile.h"
-#include "turnSummary.h"
+#include "display.h"
 #include <vector>
 #include <sstream>
 
@@ -60,7 +60,7 @@ void Human::die() {
 		// Also log it...
 		std::ostringstream oss;
 		oss << Game::getInstance()->getPlayer()->getName() << " picked up " << gold << " gold!";
-		TurnSummary::add(oss.str());
+		Display::getInstance()->addMessage(oss.str());
 
 		// ... and clear the Tile.
 		tile->setContents(NULL);

@@ -2,7 +2,7 @@
 
 #include "game.h"
 #include "abstractEnemy.h"
-#include "turnSummary.h"
+#include "display.h"
 #include "orc.h"
 #include <cmath>
 
@@ -48,6 +48,6 @@ void Goblin::strike(AbstractEnemy *e) {
 	e->getHitBy(this);
 	if (e->isDead()) {
 		this->addGold(5);
-		TurnSummary::add("Player steals 5 gold from the corpse.");
+		Display::getInstance()->addMessage("PC steals 5 gold from the corpse.");
 	}
 }

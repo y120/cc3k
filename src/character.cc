@@ -3,7 +3,7 @@
 #include "game.h"
 #include "floor.h"
 #include "tile.h"
-#include "turnSummary.h"
+#include "display.h"
 #include <cmath>
 #include <sstream>
 
@@ -77,7 +77,7 @@ bool Character::isDead() const {
 void Character::die() {
 	std::ostringstream oss;
 	oss << this->getName() << " dies.";
-	TurnSummary::add(oss.str());
+	Display::getInstance()->addMessage(oss.str());
 	this->r = -1;
 	this->c = -1;
 }
@@ -91,14 +91,22 @@ int Character::calculateDamage(Character *other) const {
 }
 
 void Character::getHitBy(Character *other) {
+	std::ostringstream oss;
 	// First check dodge.
 	if (Game::getInstance()->rand(100) < this->getDodge()) {
 		this->hit = false;
+
+		oss << other->getName() << " misses " << this->getName() << "!";
+		Display::getInstance()->addMessage(oss.str());
 		return;
 	}
 
 	this->hit = true;
-	this->addHP(-this->calculateDamage(other));
+	int dmg = this->calculateDamage(other);
+	this->addHP(-dmg);
+	oss << other->getName() << " hits " << this->getName() << " for " << dmg <<
+		" damage! (" << this->getHP() << " HP remaining.)";
+	Display::getInstance()->addMessage(oss.str());
 }
 
 bool Character::wasHit() const {

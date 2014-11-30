@@ -18,7 +18,7 @@ OBJECTS = \
 				dragonHoard.o \
 			abstractPotion.o \
 				rhPotion.o baPotion.o bdPotion.o phPotion.o waPotion.o wdPotion.o \
-	tile.o chamber.o floor.o inventory.o turnSummary.o utilities.o \
+	tile.o chamber.o floor.o inventory.o utilities.o \
 	game.o \
     main.o
 DEPENDS = ${OBJECTS:.o=.d}

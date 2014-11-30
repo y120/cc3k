@@ -2,7 +2,7 @@
 #include "game.h"
 #include "player.h"
 #include "goldPile.h"
-#include "turnSummary.h"
+#include "display.h"
 #include "tile.h"
 #include <sstream>
 
@@ -101,7 +101,7 @@ void Merchant::die() {
 		// Also log it...
 		std::ostringstream oss;
 		oss << "Player picked up " << gold << " gold!";
-		TurnSummary::add(oss.str());
+		Display::getInstance()->addMessage(oss.str());
 
 		// ... and clear the Tile.
 		tile->setContents(NULL);

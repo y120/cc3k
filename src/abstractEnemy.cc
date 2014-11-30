@@ -5,7 +5,7 @@
 #include "floor.h"
 #include "tile.h"
 #include "goldPile.h"
-#include "turnSummary.h"
+#include "display.h"
 #include "utilities.h"
 #include <sstream>
 
@@ -61,7 +61,7 @@ void AbstractEnemy::die() {
 		// Also log it...
 		std::ostringstream oss;
 		oss << "Player picked up " << gold << " gold!";
-		TurnSummary::add(oss.str());
+		Display::getInstance()->addMessage(oss.str());
 
 		// ... and clear the Tile.
 		tile->setContents(NULL);
