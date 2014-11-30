@@ -8,6 +8,7 @@
 
 namespace {
 	void setDragonSprite(Renderable *obj) {
+		obj->setName("D");
 		obj->setSprite("D");
 	}
 }

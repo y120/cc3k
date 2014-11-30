@@ -10,6 +10,7 @@
 
 namespace {
 	void setHumanSprite(Renderable *obj) {
+		obj->setName("H");
 		obj->setSprite("H");
 	}
 }

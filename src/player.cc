@@ -7,6 +7,7 @@
 
 namespace {
 	void setPlayerSprite(Renderable *obj) {
+		obj->setName("PC");
 		obj->setSprite("@");
 	}
 }

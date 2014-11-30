@@ -4,6 +4,7 @@
 
 namespace {
 	void setDwarfSprite(Renderable *obj) {
+		obj->setName("W");
 		obj->setSprite("W");
 	}
 }

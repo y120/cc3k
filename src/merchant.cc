@@ -10,6 +10,7 @@ bool Merchant::hostile = false;
 
 namespace {
 	void setMerchantSprite(Renderable *obj) {
+		obj->setName("M");
 		obj->setSprite("M");
 	}
 }

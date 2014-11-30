@@ -4,6 +4,7 @@
 
 namespace {
 	void setElfSprite(Renderable *obj) {
+		obj->setName("E");
 		obj->setSprite("E");
 	}
 }

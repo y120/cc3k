@@ -3,6 +3,7 @@
 
 namespace {
 	void setHalflingSprite(Renderable *obj) {
+		obj->setName("L");
 		obj->setSprite("L");
 	}
 }

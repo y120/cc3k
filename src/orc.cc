@@ -3,6 +3,7 @@
 
 namespace {
 	void setOrcSprite(Renderable *obj) {
+		obj->setName("O");
 		obj->setSprite("O");
 	}
 }
