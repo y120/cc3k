@@ -28,18 +28,29 @@ Floor::Floor() : goldPiles(0), potions(0), passages(new Chamber()) {
 /**
  *	Constructs a floor from an input stream
  */
-Floor::Floor(std::istream &iss) : Floor() {
+Floor::Floor(std::istream &iss) : goldPiles(0), potions(0), passages(new Chamber()) {
+	passages->setFloor(this);
+	this->chambers.reserve(Game::getInstance()->getMaxChambers());
+	this->enemies.reserve(Game::getInstance()->getMaxEnemies());
+	this->items.reserve(Game::getInstance()->getMaxPotions() + Game::getInstance()->getMaxGoldPiles());
+	// default constructor above
+	//std::cerr << "Floor: constructor " << std::endl;
 	int row = 25, col = 79;
-	std::vector<std::string> store;
+	std::vector<std::string> store(row, "");
 	for (int l0 = 0; l0 < row; l0++) {
 		getline(iss, store[l0]);
+		//std::cerr << store[l0] << '\n';
 	}
+	//std::cerr << "Floor: got lines " << std::endl;
 	for (int l0 = 1; l0 < row - 1; l0++) {
 		for (int l1 = 1; l1 < col - 1; l1++) {
 			if (store[l0][l1] == '#') {
 				this->addPassage(new Tile(l0, l1, TileType::PassageTile));
-			} else if (store[l0][l1] != '.') {
-				this->addChamber(new Chamber(store, row, col));
+			} else if (store[l0][l1] != ' ' && 
+					   store[l0][l1] != '|' &&
+					   store[l0][l1] != '-' &&
+					   store[l0][l1] != '+') {
+				this->addChamber(new Chamber(this, store, l0, l1));
 			}
 		}
 	}
@@ -86,6 +97,7 @@ void Floor::generateExit() {
  *	Adds a chamber to the list of chambers, setting the ID appropriately.
  */
 void Floor::addChamber(Chamber *chamber) {
+	//std::cerr << "Floor: addChamber " << std::endl;
 	this->chambers.push_back(chamber);
 	chamber->setId(this->chambers.size());
 	chamber->setFloor(this);
@@ -331,14 +343,31 @@ Chamber *Floor::getChamber(Tile *tile) const {
 }
 
 /**
+ *	Sets initial position of player on floor to be (r,c)
+ */
+void Floor::setPlayerPos(int r, int c) {
+	this->playerR = r;
+	this->playerC = c;
+}
+// gets player pos on floor
+int Floor::getPlayerR() const {
+	return this->playerR;
+}
+int Floor::getPlayerC() const {
+	return this->playerC;
+}
+
+/**
  *	Renders all chambers on the floor
  */
 void Floor::render() {
 	for (int l0 = 0; l0 < (int)this->chambers.size(); l0++) {
 		if (this->chambers[l0]) {
+			std::cerr << "Floor: render chamber " << l0 << std::endl;
 			this->chambers[l0]->render();
 		}
 	}
+	std::cerr << "Floor: render passages " << std::endl;
 	this->passages->render();
 }
 

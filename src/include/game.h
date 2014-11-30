@@ -4,6 +4,9 @@
 #include <string>
 #include <set>
 
+// Give access to cerr for debug purposes
+#include <iostream>
+
 // Explicitly provide access to DLC whenever we include game.h.
 #include "dlc.h"
 
@@ -36,6 +39,7 @@ public:
 
 	// Various helpers!
 	void load(std::string);
+	void initFloor(int);
 	int getPotionStrength(bool = true) const;
 	void setPotionModifier(double);
 

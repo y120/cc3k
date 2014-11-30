@@ -15,7 +15,7 @@ enum class TileType;
 class Chamber {
 public:
 	Chamber(int id = 0);
-	Chamber(std::vector<std::string> &, int, int);
+	Chamber(Floor *, std::vector<std::string> &, int, int);
 	~Chamber();
 
 	void addTile(int, int, TileType, Renderable*);
@@ -29,6 +29,8 @@ public:
 
 	Floor *getFloor() const;
 	void setFloor(Floor *);
+
+	void floodFill(std::vector<std::string> &, int, int);
 
 	void render();
 

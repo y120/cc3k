@@ -42,6 +42,9 @@ public:
 	Chamber *getChamber(int, int) const;
 	Chamber *getChamber(Tile*) const;
 
+	void setPlayerPos(int, int);
+	int getPlayerR() const;
+	int getPlayerC() const;
 	void render();
 
 protected:
@@ -51,6 +54,8 @@ private:
 	std::vector<Chamber*> chambers;
 	std::vector<AbstractEnemy*> enemies;
 	std::vector<AbstractItem*> items;
+	int playerR;
+	int playerC;
 
 	// We count how many goldPiles / potions we have on the floor solely for the
 	// purpose of generation.
