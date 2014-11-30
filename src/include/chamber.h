@@ -30,7 +30,7 @@ public:
 	Floor *getFloor() const;
 	void setFloor(Floor *);
 
-	void floodFill(std::vector<std::string> &, int, int);
+	Tile *floodFill(std::vector<std::string> &, int, int);
 
 	void render();
 

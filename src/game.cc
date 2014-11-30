@@ -102,6 +102,16 @@ void Game::loop() {
 void Game::render() {
 	//std::cerr << "Game: render " << std::endl;
 	floors[currentFloor]->render();
+	// draw border
+	Display::getInstance()->draw("|-----------------------------------------------------------------------------|",
+		 0, 0);
+	Display::getInstance()->draw("|-----------------------------------------------------------------------------|",
+		 24, 0);
+	for (int l0 = 0; l0 < 25; l0++) {
+		// draw border edges
+		Display::getInstance()->draw("|", l0, 0);
+		Display::getInstance()->draw("|", l0, 78);
+	}
 	Display::getInstance()->render();
 }
 
