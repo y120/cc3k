@@ -1,6 +1,7 @@
 #ifndef __GAME_H__
 #define __GAME_H__
 
+#include <string>
 #include <set>
 
 // Explicitly provide access to DLC whenever we include game.h.
@@ -35,6 +36,7 @@ public:
 	void render();
 
 	// Various helpers!
+	void load(std::string);
 	int getPotionStrength(bool = true) const;
 	void setPotionModifier(double);
 

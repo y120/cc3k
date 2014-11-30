@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
 
 #ifndef POTION_STRENGTH
 	#define POTION_STRENGTH 5
@@ -70,6 +71,13 @@ void Game::loop() {
 
 void Game::render() {
 	floors[currentFloor]->render();
+}
+
+void Game::load(std::string filename) {
+	std::ifstream fin(filename.c_str());
+	for (int l0 = 0; l0 < 5; l0++) {
+		floors[l0] = new Floor(fin);
+	}
 }
 
 int Game::getPotionStrength(bool withModifiers) const {
