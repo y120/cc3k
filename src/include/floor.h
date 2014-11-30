@@ -74,7 +74,6 @@ private:
 	// subclass of that, we simply make use of Chamber as is.
 	// TODO maybe refactor... if I don't run out of time.
 	Chamber *passages;
-	friend int main();
 };
 
 #endif

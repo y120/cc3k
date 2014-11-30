@@ -233,11 +233,16 @@ Tile *Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 	for (int dr = -1; dr <= 1; dr++) {
 		for (int dc = -1; dc <= 1; dc++) {
 			if (!(dr == 0 && dc == 0)) {
-				if (store[r + dr][c + dc] != ' ' && 
-					store[r + dr][c + dc] != '#' &&
-					store[r + dr][c + dc] != '9') {
+				int nr = r + dr, nc = c + dc;
+				if (nr < 0 || nc < 0 || nr >= (int)store.size() || 
+					nc >= (int)store[nr].length()) {
+					continue;
+				}
+				if (store[nr][nc] != ' ' && 
+					store[nr][nc] != '#' &&
+					store[nr][nc] != '9') {
 					// We only want to go to a goldpile from a dragon tile
-					floodFill(store, r + dr, c + dc);
+					floodFill(store, nr, nc);
 				}
 			}
 		}
