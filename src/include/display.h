@@ -17,7 +17,6 @@ class Display {
 	int rSize, cSize;
 
 	// message containers
-	std::string message;
 	std::vector<std::string> messageHistory;
 public:
 	static Display *getInstance();

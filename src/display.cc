@@ -1,13 +1,14 @@
 #include <iostream>
+#include <algorithm>
 #include "display.h"
 #include "renderable.h"
 
 using namespace std;
 
 Display::Display()
-	: out(&cout), message("")
+	: out(&cout)
 {
-	resize(30, 79);
+	resize(29, 79);
 }
 
 Display *Display::getInstance() {
@@ -34,10 +35,7 @@ void Display::resize(int row, int col) {
 }
 
 void Display::addMessage(const string &msg) {
-	if (message.length() > 0) {
-		message = message + " ";
-	}
-	message = message + msg;
+	messageHistory.push_back(msg);
 }
 
 void Display::draw(const Renderable *ado) {
@@ -51,7 +49,13 @@ void Display::draw(const string &sprite, int row, int col) {
 }
 
 void Display::drawMessage() {
-	draw("Action: " + message, 29, 0);
+	int start = messageHistory.size() - 3;
+	if (start < 0) {
+		start = 0;
+	}
+	for (int l0 = 0; l0 < std::min(3, int(messageHistory.size())); l0++) {
+		draw("Action: " + messageHistory[start + l0], 26 + l0, 20);
+	}
 }
 
 void Display::render() {
@@ -63,6 +67,4 @@ void Display::render() {
 		*out << screenBuffer[l0] << endl;
 		screenBuffer[l0] = reset;
 	}
-	messageHistory.push_back(message);
-	message = "";
 }

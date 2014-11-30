@@ -6,6 +6,7 @@
 #include "floor.h"
 #include "dlc.h"
 #include "basePlayers.h"
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -106,26 +107,31 @@ namespace {
 		using std::cout;
 		std::string desc[] = {
 			"Generated DLC (randomly generated dungeons)",
-			"Inventory DLC (store and use items later"
+			"Inventory DLC (store and use items later)"
 		};
-		cout << "ChamberCrawler3000 Main Menu\n\n";
+		Display::getInstance()->draw("ChamberCrawler3000 Main Menu", 0, 0);
 
 		// DLC select
-		cout << "Enter a number to enable or disable that DLC, or a race to start.\n\n";
+		Display::getInstance()->draw("Enter a number to enable or disable that DLC, or a race to start.", 2, 0);
+		std::ostringstream oss;
 		for (int i = 0; i < static_cast<int>(DLC::LAST); i++) {
-			cout << "[";
-			cout << (Game::getInstance()->hasDLC(static_cast<DLC>(i)) ? 'X' : ' ');
-			cout << "] " << i << ": " << desc[i] << "\n";
+			oss.str("");
+			oss << "[";
+			oss << (Game::getInstance()->hasDLC(static_cast<DLC>(i)) ? 'X' : ' ');
+			oss << "] " << i << ": " << desc[i] << "\n";
+			Display::getInstance()->draw(oss.str(), 4 + i, 0);
 		}
 
 		// Race select
-		cout << "\n\nRaces:\n";
-		cout << "s: Shade. No special bonus.\n";
-		cout << "d: Drow. Potions are more impactful.\n";
-		cout << "v: Vampire. Steal HP on hit.\n";
-		cout << "g: Goblin. Get an extra 5 gold every time you kill.\n";
-		cout << "t: Troll. Regenerate health every turn.\n";
-		cout << "\nPress q to quit.\n\n";
+		Display::getInstance()->draw("Races:", 4 + int(DLC::LAST), 0);
+		Display::getInstance()->draw("s: Shade. No special bonus.", 5 + int(DLC::LAST), 0);
+		Display::getInstance()->draw("d: Drow. Potions are more impactful.", 6 + int(DLC::LAST), 0);
+		Display::getInstance()->draw("v: Vampire. Steal HP on hit.", 7 + int(DLC::LAST), 0);
+		Display::getInstance()->draw("g: Goblin. Get an extra 5 gold every time you kill.", 8 + int(DLC::LAST), 0);
+		Display::getInstance()->draw("t: Troll. Regenerate health every turn.", 9 + int(DLC::LAST), 0);
+		Display::getInstance()->draw("Press q to quit.", 10 + int(DLC::LAST), 0);
+		
+		Display::getInstance()->render();
 	}
 }
 
@@ -197,6 +203,15 @@ void Game::loop(std::string floorFile) {
 void Game::getInput() {
 	std::string input;
 	std::cin >> input;
+	transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+	if (input[0] == 'u') {
+		// use potion
+	} else if (input[0] == 'a') {
+		// ATTACK!!
+	} else if (input[0] == 'r') {
+		// restart
+	}
 }
 
 // called once player reaches last level
