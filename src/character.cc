@@ -46,11 +46,11 @@ int Character::getDodge() const {
 }
 
 int Character::getR() const {
-	return this->pImpl->pos.r;
+	return Renderable::getR();
 }
 
 int Character::getC() const {
-	return this->pImpl->pos.c;
+	return Renderable::getC();
 }
 
 Tile *Character::getTile() const {
