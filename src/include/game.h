@@ -14,15 +14,14 @@ enum class DLC;
 
 class Game {
 public:
-	// Note: we use a modified form of the regular Singleton pattern, where we
-	// use a static instance within the getInstance function. This permits us
-	// to not worry about deleting the instance (yay, RAII / DIRR / RRID!)
 	static Game *getInstance();
+	static void cleanup();
 
 	bool hasDLC(DLC) const;
 	void setDLC(DLC, bool = true);
 
 	Player* getPlayer();
+	void setPlayer(Player*);
 	void addPlayerEffect(AbstractPlayerEffect*);
 
 	int getFloorNumber() const;
@@ -54,6 +53,8 @@ public:
 	int rand(int, int);
 
 private:
+	static Game *instance;
+
 	Player* player;
 	int currentFloor;
 	Floor *floors[5];
@@ -62,6 +63,7 @@ private:
 	std::set<DLC> dlcs;
 
 	Game();
+	~Game();
 	// Not implemented as part of the singleton pattern
 	Game(const Game&);
 	Game &operator=(const Game&);
