@@ -55,8 +55,13 @@ void Display::drawMessage() {
 }
 
 void Display::render() {
+	string reset = "";
+	for (int l0 = 0; l0 < cSize; l0++) {
+		reset = reset + ' ';
+	}
 	for (int l0 = 0; l0 < rSize; l0++) {
 		*out << screenBuffer[l0] << endl;
+		screenBuffer[l0] = reset;
 	}
 	messageHistory.push_back(message);
 	message = "";
