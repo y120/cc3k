@@ -19,6 +19,7 @@ Character::Character(int maxhp, int atk, int def, int dodge) :
 	this->setAtk(atk);
 	this->setDef(def);
 	this->setDodge(dodge);
+	this->setFloor(0);
 }
 
 Character::~Character() {
@@ -53,8 +54,16 @@ int Character::getC() const {
 	return Renderable::getC();
 }
 
+int Character::getFloor() const {
+	return this->pImpl->floor;
+}
+
+void Character::setFloor(int f) {
+	this->pImpl->floor = f;
+}
+
 Tile *Character::getTile() const {
-	return Game::getInstance()->getFloor()->getTile(this->getR(), this->getC());
+	return Game::getInstance()->getFloor(this->getFloor())->getTile(this->getR(), this->getC());
 }
 
 bool Character::isDead() const {
@@ -69,8 +78,8 @@ void Character::die() {
 	std::ostringstream oss;
 	oss << this->getName() << " dies.";
 	TurnSummary::add(oss.str());
-	this->pImpl->pos.r = -1;
-	this->pImpl->pos.c = -1;
+	this->r = -1;
+	this->c = -1;
 }
 
 /**
@@ -143,8 +152,8 @@ void Character::moveTo(Tile *newTile) {
 		oldTile->setContents(NULL);
 	}
 	newTile->setContents(this);
-	this->pImpl->pos.r = newTile->getR();
-	this->pImpl->pos.c = newTile->getC();
+	this->r = newTile->getR();
+	this->c = newTile->getC();
 }
 
 void Character::addMaxHP(int dMaxHP) {

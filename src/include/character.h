@@ -24,6 +24,8 @@ public:
 	virtual int getR() const;
 	virtual int getC() const;
 	virtual Tile *getTile() const;
+	virtual int getFloor() const;
+	virtual void setFloor(int);
 	// move functions. The first is relative, the second is absolute.
 	// note no direct setter!
 	virtual void move(int, int);

@@ -28,7 +28,7 @@
 
 Game *Game::instance = NULL;
 
-Game::Game() : player(NULL), currentFloor(1), potionModifier(1) {
+Game::Game() : player(NULL), currentFloor(0), potionModifier(1) {
 	// NOTE: We cannot initialise Floors here because that introduces infinite
 	// recursion... oops!
 	// currentFloor 0 is invalid. We must call initFloor(1) once
@@ -45,7 +45,7 @@ Game* Game::getInstance() {
 	if (!Game::instance) {
 		Game::instance = new Game();
 		for (int i = 0; i < 5; i++) {
-			Game::instance->floors[i] = new Floor();
+			Game::instance->floors[i] = new Floor(i + 1);
 		}
 		atexit(Game::cleanup);
 	}
@@ -123,7 +123,7 @@ void Game::renderUi() {
 
 void Game::render() {
 	//std::cerr << "Game: render " << std::endl;
-	floors[currentFloor]->render();
+	this->getFloor()->render();
 	// draw border
 	Display::getInstance()->draw("|-----------------------------------------------------------------------------|",
 		 0, 0);
@@ -140,6 +140,7 @@ void Game::render() {
 
 void Game::initFloor(int flr) {
 	currentFloor = flr;
+	player->setFloor(flr);
 	player->move(floors[currentFloor]->getPlayerR(), floors[currentFloor]->getPlayerC());
 }
 
@@ -148,7 +149,7 @@ void Game::load(std::string filename) {
 	for (int l0 = 0; l0 < 5; l0++) {
 		//std::cerr << "Game:load " << l0 << std::endl;
 		delete floors[l0];
-		floors[l0] = new Floor(fin);
+		floors[l0] = new Floor(l0 + 1, fin);
 	}
 }
 

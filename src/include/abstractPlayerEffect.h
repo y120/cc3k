@@ -35,6 +35,8 @@ public:
 	int getR() const;
 	int getC() const;
 	Tile* getTile() const;
+	int getFloor() const;
+	void setFloor(int);
 	void move(int, int);
 	void moveTo(int, int);
 	void moveTo(Tile*);

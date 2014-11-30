@@ -19,7 +19,7 @@ Chamber::Chamber(int id) : id(id), floor(NULL) {}
  *	Constructs a chamber from a loaded string vector position (r,c)
  */
 Chamber::Chamber(Floor *fl, std::vector<std::string> &store, int r, int c)
-	: id(-1), floor(fl)
+	: id(-1), floor(fl), tiles()
 {
 	//std::cerr << "Chamber: constructor " << r << ' ' << c << std::endl;
 	//std::cerr << "store size:" << store.size() << "x" << store[0].length() << std::endl;

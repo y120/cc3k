@@ -6,10 +6,7 @@ struct CharacterImpl {
 		int hp, maxhp, atk, def, dodge;
 	} stats;
 
-	struct CharacterPosition {
-		// position on floor -- x[0, 80) y[0, 30]
-		int r, c;
-	} pos;
+	int floor;
 };
 
 #endif

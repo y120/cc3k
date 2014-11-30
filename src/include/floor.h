@@ -11,8 +11,8 @@ class AbstractItem;
 
 class Floor {
 public:
-	Floor();
-	Floor(std::istream &);
+	Floor(int id);
+	Floor(int id, std::istream &);
 	~Floor();
 
 	void generateExit();
@@ -56,6 +56,8 @@ protected:
 	Tile *getRandomUnoccupiedTile() const;
 
 private:
+	int id;
+
 	std::vector<Chamber*> chambers;
 	std::vector<AbstractEnemy*> enemies;
 	std::vector<AbstractItem*> items;
@@ -72,6 +74,7 @@ private:
 	// subclass of that, we simply make use of Chamber as is.
 	// TODO maybe refactor... if I don't run out of time.
 	Chamber *passages;
+	friend int main();
 };
 
 #endif

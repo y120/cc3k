@@ -62,6 +62,12 @@ int AbstractPlayerEffect::getC() const {
 Tile *AbstractPlayerEffect::getTile() const {
 	return base->getTile();
 }
+int AbstractPlayerEffect::getFloor() const {
+	return base->getFloor();
+}
+void AbstractPlayerEffect::setFloor(int f) {
+	base->setFloor(f);
+}
 void AbstractPlayerEffect::move(int dr, int dc) {
 	base->move(dr, dc);
 }

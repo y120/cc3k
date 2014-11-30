@@ -3,12 +3,15 @@
 #include "floor.h"
 #include "basePlayers.h"
 
+#include <iostream>
+
 using namespace std;
 
 int main() {
 	//Game::getInstance()->load("cc3kfloor.txt");
+	Game::getInstance()->srand(time(NULL));
 	Game::getInstance()->setPlayer(new Shade());
-	Game::getInstance()->getFloor()->generate();
+	Game::getInstance()->getFloor(1)->generate();
 	Game::getInstance()->initFloor(1);
 	Game::getInstance()->render();
 	Game::cleanup();
