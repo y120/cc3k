@@ -5,7 +5,7 @@
 using namespace std;
 
 Display::Display()
-	: out(&cout)
+	: out(&cout), message("")
 {
 	resize(30, 79);
 }
@@ -15,7 +15,7 @@ Display *Display::getInstance() {
 	return &singleton;
 }
 
-void Display::setSource(std::ostream *os) {
+void Display::setOutput(std::ostream *os) {
 	out = os;
 }
 
@@ -33,6 +33,13 @@ void Display::resize(int row, int col) {
 	cSize = col;
 }
 
+void Display::addMessage(const string &msg) {
+	if (message.length() > 0) {
+		message = message + " ";
+	}
+	message = message + msg;
+}
+
 void Display::draw(const Renderable *ado) {
 	draw(ado->getSprite(), ado->getR(), ado->getC());
 }
@@ -43,8 +50,14 @@ void Display::draw(const string &sprite, int row, int col) {
 	);
 }
 
-void Display::render() const {
+void Display::drawMessage() {
+	draw("Action: " + message, 29, 0);
+}
+
+void Display::render() {
 	for (int l0 = 0; l0 < rSize; l0++) {
 		*out << screenBuffer[l0] << endl;
 	}
+	messageHistory.push_back(message);
+	message = "";
 }

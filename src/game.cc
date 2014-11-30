@@ -107,6 +107,7 @@ Player *Game::titleScreen() {
 void Game::loop() {
 	while ((player = titleScreen()) != NULL) {
 		gameOver(false);
+		Display::getInstance()->addMessage("Player character has spawned.");
 		while (!gameOver()) {
 			render();;
 			getInput();
@@ -156,8 +157,7 @@ void Game::renderUi() {
 	oss.str("");
 	oss << "Def: " << player->getDef();
 	Display::getInstance()->draw(oss.str(), 28, 0);
-	Display::getInstance()->draw("Action: "/* + message*/, 29, 0);
-	/**** TODO: Action message *****/
+	Display::getInstance()->drawMessage();
 }
 
 void Game::render() {

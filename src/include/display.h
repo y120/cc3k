@@ -15,13 +15,19 @@ class Display {
 	std::ostream* out;
 	std::vector<std::string> screenBuffer;
 	int rSize, cSize;
+
+	// message containers
+	std::string message;
+	std::vector<std::string> messageHistory;
 public:
 	static Display *getInstance();
-	void setSource(std::ostream *);
+	void setOutput(std::ostream *);
 	void resize(int row, int col);
+	void addMessage(const std::string &);
+	void drawMessage();
 	void draw(const Renderable *);
 	void draw(const std::string &, int row = 0, int col = 0);
-	void render() const;
+	void render();
 };
 
 #endif
