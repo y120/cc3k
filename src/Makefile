@@ -1,6 +1,6 @@
 INCLUDES = 
 CXX = g++
-CXXFLAGS = -Wall -MMD -std=c++11 -Iinclude -ggdb
+CXXFLAGS = -Wall -MMD -std=c++0x -Iinclude -ggdb
 LDLIBS = -lX11
 OBJECTS = \
 	display.o \

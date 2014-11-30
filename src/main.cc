@@ -1,14 +1,16 @@
-/*
+//*
 #include "game.h"
+#include "floor.h"
 #include "basePlayers.h"
 
 using namespace std;
 
 int main() {
 	//cerr << "1\n";
-	Game::getInstance()->load("cc3kfloor.txt");
-	//cerr << "2\n";
+	//Game::getInstance()->load("cc3kfloor.txt");
 	Game::getInstance()->setPlayer(new Shade());
+	Game::getInstance()->getFloor()->generate();
+	//cerr << "2\n";
 	//cerr << "3\n";
 	Game::getInstance()->initFloor(1);
 	//cerr << "4\n";
@@ -19,7 +21,7 @@ int main() {
 }
 
 /*
-*/
+
 #include "game.h"
 #include "floor.h"
 #include <ctime>

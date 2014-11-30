@@ -16,6 +16,7 @@
 #include <iostream>
 #include <queue>
 #include <functional>
+#include <algorithm>
 
 /**
  *	Constructor. Initialise passages and # of goldPiles / potions. The chambers,
@@ -101,7 +102,7 @@ void Floor::generateExit() {
  *	Adds a chamber to the list of chambers, setting the ID appropriately.
  */
 void Floor::addChamber(Chamber *chamber) {
-	//std::cerr << "Floor: addChamber " << std::endl;
+//std::cerr << "Floor: addChamber " << std::endl;
 	this->chambers.push_back(chamber);
 	chamber->setId(this->chambers.size());
 	chamber->setFloor(this);
@@ -361,6 +362,8 @@ Chamber *Floor::getChamber(Tile *tile) const {
 void Floor::generate() {
 	using namespace std;
 
+	typedef pair<int, int> pii;
+
 	// Approximate desired size. Can generate larger or smaller.
 	const int REQUIRED = 90;
 	const int DESIRED = 130;
@@ -393,6 +396,8 @@ void Floor::generate() {
 	char board[MAX_ROWS][MAX_COLS] = {};
 	// Whether a tile is a vertical wall or not.
 	bool vert[MAX_ROWS][MAX_COLS] = {};
+	// Whether a tile can be a door or not.
+	bool door[MAX_ROWS][MAX_COLS] = {};
 
 	// Returns true if r, c is actually in bounds.
 	auto inBounds = [] (int r, int c) {
@@ -401,50 +406,24 @@ void Floor::generate() {
 
 	// Sets a tile and its 9 surrounding tiles as owned by a specific chamber.
 	// The further surrounding whatever are marked as owned by nobody (-1).
-	auto markOwned = [=, &owner] (pair<int, int> pii, int n) {
-		int r = pii.first, c = pii.second;
-		/*for (int dr = -2; dr <= 2; dr++) {
-			for (int dc = -2; dc <= 2; dc++) {
-				int nr = r + dr, nc = c + dc;
-				if (inBounds(nr, nc) && !board[nr][nc]) {
-					owner[nr][nc] = -1;
-				}
-			}
-		}*/
+	auto markOwned = [=, &owner] (pii p, int n) {
+		int r = p.first, c = p.second;
 		owner[r][c] = n + 1;
-		/*for (int dr = -1; dr <= 1; dr++) {
-			for (int dc = -1; dc <= 1; dc++) {
-				int nr = r + dr, nc = c + dc;
-				if (inBounds(nr, nc) && owner[nr][nc] < 1) {
-					owner[nr][nc] = n + 1;
-				}
-			}
-		}*/
 	};
 
 	// Contains the next points to consider.
-	queue<pair<int, int> > next[5];
+	queue<pii> next[5];
 	// Contains the actual positions decided upon.
-	vector<pair<int, int> > tiles[5];
+	vector<pii> tiles[5];
+	// Contains potential doors.
+	vector<pii> potentialDoors[5];
+	// Contains the actual doors.
+	vector<pii> doors[5];
 	// Contains the passages. Passages will grow toward doors or other
 	// passages, and away from walls.
-	vector<pair<int, int> > passages;
+	vector<pii> passages;
 
-	// Select five random seeds.
-	/*for (int i = 0; i < 5; i++) {
-		// Choose the r and c. We need to make sure we don't start off with an
-		// owned cell.
-		int r, c;
-		do {
-			r = Game::getInstance()->rand(MAX_ROWS);
-			c = Game::getInstance()->rand(MAX_COLS);
-		} while (owner[r][c]);
-		pair<int, int> pii = make_pair(r, c);
-		markOwned(pii, i);
-		cout << "Seed " << i << " : " << pii.first << " " << pii.second << endl;
-		next[i].push(pii);
-	}*/
-	pair<int, int> seeds[] = {{4, 20}, {5, 65}, {16, 10}, {17, 55}, {11, 38}};
+	pii seeds[] = {{4, 20}, {5, 65}, {16, 10}, {17, 55}, {11, 38}};
 	// 30% chance to swap x-positions of 0 and 2, 1 and 4.
 	for (int i = 0; i < 2; i++) {
 		if (Game::getInstance()->rand(100) < 30) {
@@ -454,16 +433,11 @@ void Floor::generate() {
 		}
 	}
 	for (int i = 0; i < 5; i++) {
-		pair<int, int> seed = seeds[i];
+		pii seed = seeds[i];
 		seed.first += Game::getInstance()->rand(-3, 3);
 		seed.second += Game::getInstance()->rand(-8, 8);
 		next[i].push(seed);
 	}
-	/*next[0].push(make_pair(3, 20));
-	next[1].push(make_pair(3, 65));
-	next[2].push(make_pair(18, 10));
-	next[3].push(make_pair(18, 55));
-	next[4].push(make_pair(11, 38));*/
 
 	int dr[] = {-1, +1, +0, +0};
 	int dc[] = {+0, +0, -1, +1};
@@ -481,7 +455,7 @@ void Floor::generate() {
 			}
 
 			// The current tile to consider.
-			pair<int, int> curPos = next[curChamber].front();
+			pii curPos = next[curChamber].front();
 			next[curChamber].pop();
 			int chance = getGenerationChance(tiles[curChamber].size());
 			int curOwner = owner[curPos.first][curPos.second];
@@ -490,18 +464,13 @@ void Floor::generate() {
 			// that a neighbouring tile was sniped recently, or that we're
 			// checking the same thing twice!
 			if ((curOwner && curOwner != curChamber + 1) || board[curPos.first][curPos.second]) {
-				if(0&&curChamber==1)cout<<"can't use, owned by "<<curOwner<<endl;
 				continue;
 			}
 			//cout << "cursize: " << tiles[curChamber].size() << "; chance: " << chance << endl;
 			// Then check if we decide to use this or not.
 			if (Game::getInstance()->rand(100) >= chance) {
-			if (0&&curChamber==1)cout<<"Reject!"<<endl;
 				continue;
 			}
-
-			if (0&&curChamber==1)
-			cout << "Take " << curPos.first << " " << curPos.second << " for " << curChamber << endl;
 
 			// We've decided to use it, so add it to the list of actual tiles
 			// and mark this (and its neighbours) as owned.
@@ -514,9 +483,6 @@ void Floor::generate() {
 			for (int j = 0; j < 4; j++) {
 				// For each direction, we randomly decide whether or not we will
 				// even consider that Tile.
-				/*if (Game::getInstance()->rand(100) >= chance) {
-					continue;
-				}*/
 				int i;
 				do {
 					i = Game::getInstance()->rand(4);
@@ -527,15 +493,13 @@ void Floor::generate() {
 				} while (used[i]);
 				used[i] = true;
 
-				pair<int, int> nextPos(curPos);
+				pii nextPos(curPos);
 				nextPos.first += dr[i];
 				nextPos.second += dc[i];
 				if (!inBounds(nextPos.first, nextPos.second)) {
 					continue;
 				}
 				int nextOwner = owner[nextPos.first][nextPos.second];
-				if (0&&curChamber == 1)
-				cerr << "Consider " << nextPos.first << " " << nextPos.second << " for " << curChamber << " (owned by " << nextOwner << ")\n";
 
 				// If this tile isn't owned by somebody else, then we add it to
 				// our list for future consideration.
@@ -547,7 +511,7 @@ void Floor::generate() {
 	} // for allEmpty
 
 	// Syntactic sugar for iteration over the board.
-	auto iterate = [=, &board] (function<bool(int, int)> cond, function<void(int, int, int, int)> expr) {
+	auto iterate = [&] (function<bool(int, int)> cond, function<void(int, int, int, int)> expr) {
 		for (int r = 0; r < MAX_ROWS; r++) {
 			for (int c = 0; c < MAX_COLS; c++) {
 				if (cond(r, c)) {
@@ -566,8 +530,8 @@ void Floor::generate() {
 
 	// Postprocess step 1: remove floor tiles next to floor tiles of a different
 	// chamber by replacing with empty space.
-	iterate([=] (int r, int c) { return board[r][c] == '.'; },
-		[=, &board] (int r, int c, int nr, int nc) {
+	iterate([&] (int r, int c) { return board[r][c] == '.'; },
+		[&] (int r, int c, int nr, int nc) {
 
 		if (board[nr][nc] == '.' && owner[r][c] != owner[nr][nc]) {
 			if (Game::getInstance()->rand(2)) {
@@ -579,19 +543,21 @@ void Floor::generate() {
 	});
 
 	// Step 2: transform floor tiles bordering empty space into walls
-	iterate([=, &board] (int r, int c) {
+	iterate([&] (int r, int c) {
 		if (r == 0 || c == 0 || r == MAX_ROWS - 1 || c == MAX_COLS - 1) {
 			board[r][c] = '|';
 			return false;
 		}
 		return board[r][c] == '.';
-	}, [=, &board] (int r, int c, int nr, int nc) {
+	}, [&] (int r, int c, int nr, int nc) {
 		if (board[nr][nc] == 0) {
 			board[r][c] = '|';
 		}
 	});
+
 	// Step 3: transform walls not bordering floor tiles into empty space (i.e.
-	// pruning), and mark walls as either vertical or horizontal.
+	// pruning). Mark potential doors. Can't use iterate function because of the
+	// special flag handling.
 	for (int r = 0; r < MAX_ROWS; r++) {
 		for (int c = 0; c < MAX_COLS; c++) {
 			if (board[r][c] == '|') {
@@ -604,6 +570,25 @@ void Floor::generate() {
 						}
 						if (board[nr][nc] == '.') {
 							shouldRemove = false;
+							// This is also a potential door IF it is adjacent
+							// to a floor tile and a space!
+							if (r > 0 && r < MAX_ROWS - 1 && c > 0 && c < MAX_COLS - 1 && !door[r][c]) {
+								if ((dr == 0 && !board[r][c - dc]) || (dc == 0 && !board[r - dr][c])) {
+									door[r][c] = true;
+
+									int chamber = -1;
+									for (int i = 0; chamber == -1 && i < 5; i++) {
+										for (vector<pii>::iterator it = tiles[i].begin();
+											it != tiles[i].end(); ++it) {
+											if (it->first == r && it->second == c) {
+												chamber = i;
+												break;
+											}
+										}
+									}
+									potentialDoors[chamber].push_back(make_pair(r, c));
+								}
+							}
 						} else if (board[nr][nc] == '|' && dr && !dc) {
 							vert[r][c] = true;
 						}
@@ -613,6 +598,233 @@ void Floor::generate() {
 					board[r][c] = 0;
 				}
 			}
+		}
+	}
+
+	// Choose doors!
+	for (int i = 0; i < 5; i++) {
+		int numDoors = Game::getInstance()->rand(2, 5);
+		// Middle room can generate more doors.
+		if (i == 4) {
+			numDoors = Game::getInstance()->rand(3, 6);
+		}
+		while ((int)doors[i].size() < numDoors) {
+			int iterationsLeft = 1000;
+			pii d;
+			do {
+				iterationsLeft--;
+				if (iterationsLeft < 1) {
+					// Give up eventually...
+					break;
+				}
+				d = potentialDoors[i][Game::getInstance()->rand(potentialDoors[i].size())];
+			} while (!door[d.first][d.second]);
+
+			// Ban the row and column from being used for more doors.
+			// This improves chances of connectivity.
+			for (int j = 0; j < MAX_ROWS; j++) {
+				for (int k = -2; k <= 2; k++) {
+					if (inBounds(j, d.second + k)) {
+						door[j][d.second + k] = false;
+					}
+				}
+			}
+			for (int j = 0; j < MAX_COLS; j++) {
+				door[d.first][j] = false;
+			}
+			doors[i].push_back(d);
+			board[d.first][d.second] = '+';
+		}
+	}
+
+//cerr << "Generating passages...\n";
+
+	int passageDist[MAX_ROWS][MAX_COLS] = {};
+	std::fill(&passageDist[0][0], &passageDist[0][0] + sizeof(passageDist)
+		/ sizeof(int), 99999);
+
+	// Grow passages. The "cost" of a tile is defined to be the minimum of its
+	// distance to any door or its distance to any other passage, plus two less
+	// its distance to the current thing. Precalculate passage distances.
+	for (int i = 0; i < 5; i++) {
+		// Unset door state!
+		for (vector<pii>::iterator it = doors[i].begin(); it != doors[i].end(); ++it) {
+			board[it->first][it->second] = 'Z';
+		}
+		for (vector<pii>::iterator it = doors[i].begin(); it != doors[i].end(); ++it) {
+			vector<pii> toAdd;
+			int curR = it->first, curC = it->second;
+/*
+	for (int r = 0; r < MAX_ROWS; r++) {
+		for (int c = 0; c < MAX_COLS; c++) {
+			if (board[r][c] == 0) {
+				cout << ' ';
+			} else if (board[r][c] == '|') {
+				cout << (vert[r][c] ? '|' : '-');
+			} else {
+				cout << board[r][c];
+			}
+		}
+		cout << endl;
+	}
+cerr << "\n\n\nDoor for chamber " << i << endl;
+*/
+			bool failed = false;
+			// Try growing this passage.
+			while (true) {
+				int bestDR, bestDC, best = 99999;
+				for (int j = 0; j < 4; j++) {
+					int newR = curR + dr[j], newC = curC + dc[j];
+					// If out of bounds then skip.
+					if (!inBounds(newR, newC)) {
+						continue;
+					}
+//cerr << "Checking " << newR << " " << newC << "! ";
+					if (board[newR][newC]) {
+						// Already occupied, but not a door or chamber? skip.
+						if (board[newR][newC] != '+' && board[newR][newC] != '#') {
+							continue;
+						} else {
+							// A door? Yay!
+//cerr << "\n end psg at door...\n";
+							best = 0;
+							bestDR = dr[j];
+							bestDC = dc[j];
+							break;
+						}
+					}
+					int cost = passageDist[newR][newC];
+//cerr << "ok... cost is " << cost << endl;
+
+					if (cost) {
+						// Find the closest door if we're not touching passage.
+						bool vis[MAX_ROWS][MAX_COLS] = {};
+						queue<pair<pii, int> > q;
+						q.push(make_pair(make_pair(newR, newC), 0));
+						while (q.size()) {
+							pii p = q.front().first;
+							int d = q.front().second, r = p.first, c = p.second;
+							q.pop();
+
+							// Already visited: skip.
+							if (vis[r][c]) {
+								continue;
+							}
+							vis[r][c] = true;
+
+							if (board[r][c] == '+') {
+								// we're done! quit out :)
+//cerr << "found door at " << r << " " << c << "; cost is " << d << endl;
+								cost = min(cost, d);
+								break;
+							}
+
+							// Try looking in neighbours.
+							for (int k = 0; k < 4; k++) {
+								int nr = r + dr[k], nc = c + dc[k];
+								if (inBounds(nr, nc) && !vis[nr][nc] && 
+									(!board[nr][nc] || board[nr][nc] == '+')) {
+									q.push(make_pair(make_pair(nr, nc), d + 1));
+								}
+							}
+						} // while q.size()
+
+						// +2 to cost per door/wall it's next to, unless cost==0
+						/*if (cost) {
+							for (int k = 0; k < 4; k++) {
+								int nr = newR + dr[k], nc = newC + dc[k];
+								if (inBounds(nr, nc) && board[nr][nc == '|']) {
+									cost += 2;
+								}
+							}
+						}*/
+					}
+
+					if (cost < best) {
+						best = cost;
+						bestDR = dr[j];
+						bestDC = dc[j];
+					}
+				} // for j
+				// Finished the passageway: done!
+				if (best == 0) {
+					break;
+				} else if (best == 99999) {
+					failed = true;
+					break;
+				}
+				curR += bestDR;
+				curC += bestDC;
+//cerr << "cost is " << best << "; placed passage at " << curR << " " << curC << endl;
+				pii newPassage = make_pair(curR, curC);
+				toAdd.push_back(newPassage);
+				passages.push_back(newPassage);
+				board[curR][curC] = '@';
+			}
+			// Update distances to path on success, or rollback on failure.
+			for (vector<pii>::iterator it = toAdd.begin(); it != toAdd.end(); ++it) {
+				if (failed) {
+					board[it->first][it->second] = 0;
+					continue;
+				}
+				board[it->first][it->second] = '#';
+				queue<pair<pii, int> > toUpdate;
+				toUpdate.push(make_pair(*it, 0));
+				while (toUpdate.size()) {
+					pii p = toUpdate.front().first;
+					int d = toUpdate.front().second, r = p.first, c = p.second;
+					toUpdate.pop();
+					if (d >= passageDist[r][c]) {
+						continue;
+					}
+					passageDist[r][c] = d;
+					for (int k = 0; k < 4; k++) {
+						int nr = r + dr[k], nc = c + dc[k];
+						if (inBounds(nr, nc)) {
+							toUpdate.push(make_pair(make_pair(nr, nc), d + 1));
+						}
+					}
+				}
+			}
+			// If failure, then remove this door.
+			if (failed) {
+				board[it->first][it->second] = '|';
+			}
+		}
+		// Reset door state, but only for successful ones.
+		for (vector<pii>::iterator it = doors[i].begin(); it != doors[i].end(); ++it) {
+			if (board[it->first][it->second] == 'Z') {
+				board[it->first][it->second] = '+';
+			}
+		}
+	}
+
+	// Create the structure.
+	for (int i = 0; i < 5; i++) {
+		Chamber *ch = new Chamber();
+		for (vector<pii>::iterator it = tiles[i].begin(); it != tiles[i].end(); ++it) {
+			int r = it->first, c = it->second;
+			TileType tt;
+			if (board[r][c] == '.') {
+				tt = TileType::FloorTile;
+			} else if (board[r][c] == '+') {
+				tt = TileType::DoorTile;
+			} else {
+				tt = TileType::WallTile;
+			}
+			ch->addTile(r + 2, c + 2, tt, NULL);
+		}
+		this->addChamber(ch);
+	}
+	for (vector<pii>::iterator it = passages.begin(); it != passages.end(); ++it) {
+		this->addPassage(new Tile(it->first + 2, it->second + 2, TileType::PassageTile));
+	}
+
+	this->fill();
+
+/*
+	for (int r = 0; r < MAX_ROWS; r++) {
+		for (int c = 0; c < MAX_COLS; c++) {
 			if (board[r][c] == 0) {
 				cout << ' ';
 			} else if (board[r][c] == '|') {
@@ -632,6 +844,7 @@ void Floor::generate() {
 void Floor::fill() {
 	// Player Character location.
 	Tile *tile = this->getRandomUnoccupiedTile();
+	setPlayerPos(tile->getR(), tile->getC());
 	Game::getInstance()->getPlayer()->moveTo(tile);
 	// Stairway location.
 	this->generateExit();

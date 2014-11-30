@@ -27,10 +27,7 @@
 
 Game *Game::instance = NULL;
 
-Game::Game() : player(NULL), currentFloor(0), potionModifier(1) {
-	for (int i = 0; i < 5; i++) {
-		this->floors[i] = NULL;
-	}
+Game::Game() : player(NULL), currentFloor(1), potionModifier(1) {
 	// NOTE: We cannot initialise Floors here because that introduces infinite
 	// recursion... oops!
 	// currentFloor 0 is invalid. We must call initFloor(1) once
@@ -46,6 +43,9 @@ Game::~Game() {
 Game* Game::getInstance() {
 	if (!Game::instance) {
 		Game::instance = new Game();
+		for (int i = 0; i < 5; i++) {
+			Game::instance->floors[i] = new Floor();
+		}
 		atexit(Game::cleanup);
 	}
 	return Game::instance;
@@ -114,6 +114,7 @@ void Game::load(std::string filename) {
 	std::ifstream fin(filename.c_str());
 	for (int l0 = 0; l0 < 5; l0++) {
 		//std::cerr << "Game:load " << l0 << std::endl;
+		delete floors[l0];
 		floors[l0] = new Floor(fin);
 	}
 }
