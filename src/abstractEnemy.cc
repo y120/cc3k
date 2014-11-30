@@ -121,6 +121,7 @@ void AbstractEnemy::doTurn() {
  *	range of 1.
  */
 bool AbstractEnemy::canHitPlayer() const {
+std::cerr << "Checking if we can hit: we're at " << getR() << " " << getC() << ", player at " << Game::getInstance()->getPlayer()->getR() << " " << Game::getInstance()->getPlayer()->getC() << '\n';
 	int distance = Utilities::distance(this->getR(), this->getC(),
 		Game::getInstance()->getPlayer()->getR(), Game::getInstance()->getPlayer()->getC());
 	return distance <= 1;

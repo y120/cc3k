@@ -96,7 +96,7 @@ void Player::getHitBy(Dragon* e) {
 }
 
 void Player::die() {
-	// TODO
+	Game::getInstance()->gameOver(true);
 }
 
 Player* Player::tickEffects() {
