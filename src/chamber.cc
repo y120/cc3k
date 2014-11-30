@@ -4,6 +4,7 @@
 #include "baseEnemies.h"
 #include "basePotions.h"
 #include "goldPile.h"
+#include "dragonHoard.h"
 #include "tile.h"
 #include "tileType.h"
 #include <vector>
@@ -122,14 +123,21 @@ void Chamber::setFloor(Floor *fl) {
 /**
  *	Fills the given Chamber ptr with stuff from the string vector
  */
-void Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
+Tile *Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
+	if (store[r][c] == ' ') {
+		// if we've already visited it, just return the tile reference
+		return getTile(r, c);
+	}
+
 	//std::cerr << "Chamber: floodFilling " << r << ' ' << c << " '" << store[r][c]  << "'\n";
 	TileType tt = TileType::NoTile;
 	Renderable *thing = NULL;
 	if (store[r][c] == '.') {
 		tt = TileType::FloorTile;
-	} else if (store[r][c] == '|' || store[r][c] == '-') {
-		tt = TileType::WallTile;
+	} else if (store[r][c] == '-') {
+		tt = TileType::WallTileH;
+	} else if (store[r][c] == '|') {
+		tt = TileType::WallTileV;
 	} else if (store[r][c] == '+') {
 		tt = TileType::DoorTile;
 	} else if (store[r][c] == '#') {		// Should never happen
@@ -158,9 +166,20 @@ void Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 			case 'M':
 				thing = this->getFloor()->addEnemy(new Merchant());
 				break;
-			case 'D':
-				//thing = this->getFloor()->addEnemy(new Dragon());
+			case 'D': {
+				Tile *hoard = NULL;
+				for (int dr = -1; dr <= 1; dr++) {
+					for (int dc = -1; dc <= 1; dc++) {
+						if (!(dr == 0 && dc == 0)) {
+							if (store[r][c] == '9') {
+								hoard = floodFill(store, r + dr, c + dc);
+							}
+						}
+					}
+				}
+				thing = this->getFloor()->addEnemy(new Dragon(hoard));
 				break;
+			}
 			case 'L':
 				thing = this->getFloor()->addEnemy(new Halfling());
 				break;
@@ -198,22 +217,16 @@ void Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 				thing = this->getFloor()->addItem(new GoldPile(GoldPile::MerchantHoard));
 				break;
 			case '9':
-				thing = this->getFloor()->addItem(new GoldPile(GoldPile::DragonHoard));
+				thing = this->getFloor()->addItem(new DragonHoard());
 				break;
 		}
 	}
 	Tile *tilePtr = this->addTile(r, c, tt, thing);
-	if (thing != NULL) {
-		std::cerr << "Chamber - setting thing to be " << std::string(1, store[r][c]) << '\n';
-		thing->setSprite(std::string(1, store[r][c]));
-	} else {
-		tilePtr->setSprite(std::string(1, store[r][c]));
-	} /**/ // Old and outdated; Use tile->render() to take care of types
 
 	// Recursively apply to all neighbours
 	if (store[r][c] == '|' || store[r][c] == '-' || store[r][c] == '+') {
 		// don't recurse if it's currently a wall or a door
-		return;
+		return tilePtr;
 	}
 	store[r][c] = ' ';
 
@@ -221,12 +234,15 @@ void Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 		for (int dc = -1; dc <= 1; dc++) {
 			if (!(dr == 0 && dc == 0)) {
 				if (store[r + dr][c + dc] != ' ' && 
-					store[r + dr][c + dc] != '#') {
+					store[r + dr][c + dc] != '#' &&
+					store[r + dr][c + dc] != '9') {
+					// We only want to go to a goldpile from a dragon tile
 					floodFill(store, r + dr, c + dc);
 				}
 			}
 		}
 	}
+	return tilePtr;
 }
 
 /**

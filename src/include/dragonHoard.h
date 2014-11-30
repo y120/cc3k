@@ -7,7 +7,10 @@ class Dragon;
 
 class DragonHoard : public GoldPile {
 public:
+	DragonHoard();
 	DragonHoard(Dragon*);
+
+	void setDragon(Dragon*);
 
 	bool canPickUp() const;
 private:

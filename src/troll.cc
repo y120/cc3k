@@ -9,6 +9,13 @@
 Troll::Troll() : Player(120, 25, 15) {}
 
 /**
+ *	Returns the player race
+ */
+std::string Troll::getRace() const {
+	return "Troll";
+}
+
+/**
  *	Default getHitBy function, here as part of the Visitor pattern.
  */
 void Troll::getHitBy(AbstractEnemy *e) {

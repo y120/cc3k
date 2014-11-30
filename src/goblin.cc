@@ -12,6 +12,13 @@
 Goblin::Goblin() : Player(110, 15, 20) {}
 
 /**
+ *	Returns the player race
+ */
+std::string Goblin::getRace() const {
+	return "Goblin";
+}
+
+/**
  *	Default getHitBy function, here as part of the Visitor pattern.
  */
 void Goblin::getHitBy(AbstractEnemy *e) {

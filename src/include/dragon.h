@@ -4,10 +4,14 @@
 #include "abstractEnemy.h"
 
 class Tile;
+class DragonHoard;
 
 class Dragon : public AbstractEnemy {
 public:
+	//Dragon();
 	Dragon(Tile*);
+
+	//void setHoard(DragonHoard *);
 
 	void getHitBy(Player*);
 	void strike(Player*);

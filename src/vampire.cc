@@ -15,6 +15,13 @@ Vampire::Vampire() : Player(50, 25, 25) {
 }
 
 /**
+ *	Returns the player race
+ */
+std::string Vampire::getRace() const {
+	return "Vampire";
+}
+
+/**
  *	Default getHitBy function, here as part of the Visitor pattern.
  */
 void Vampire::getHitBy(AbstractEnemy *e) {

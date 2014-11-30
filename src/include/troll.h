@@ -9,6 +9,8 @@ class Troll : public Player {
 public:
 	Troll();
 
+	std::string getRace() const;
+
 	void getHitBy(AbstractEnemy*);
 	void strike(AbstractEnemy*);
 	Player* tickEffects();

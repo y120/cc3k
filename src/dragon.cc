@@ -12,6 +12,10 @@ namespace {
 	}
 }
 
+//Dragon::Dragon() : AbstractEnemy(150, 20, 20), hoard(NULL) {
+//	setDragonSprite(this);
+//}
+
 /**
  *	On initialisation, set the hoard that the Dragon guards.
  */
@@ -22,6 +26,10 @@ Dragon::Dragon(Tile *hoard) : AbstractEnemy(150, 20, 20), hoard(hoard) {
  *	Note that we don't use a destructor because the Dragon does not own the
  *	Tile, it just knows about it.
  */
+
+//Dragon::setHoard(DragonHoard *hd) {
+//	hoard = hd;
+//}
 
 /**
  *	Default getHitBy function, here as part of the Visitor pattern.

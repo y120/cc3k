@@ -11,6 +11,13 @@ Drow::Drow() : Player(150, 25, 15) {
 }
 
 /**
+ *	Returns the player race
+ */
+std::string Drow::getRace() const {
+	return "Drow";
+}
+
+/**
  *	Default getHitBy function, here as part of the Visitor pattern.
  */
 void Drow::getHitBy(AbstractEnemy *e) {

@@ -6,16 +6,11 @@
 using namespace std;
 
 int main() {
-	//cerr << "1\n";
 	//Game::getInstance()->load("cc3kfloor.txt");
 	Game::getInstance()->setPlayer(new Shade());
 	Game::getInstance()->getFloor()->generate();
-	//cerr << "2\n";
-	//cerr << "3\n";
 	Game::getInstance()->initFloor(1);
-	//cerr << "4\n";
 	Game::getInstance()->render();
-	//cerr << "5\n";
 	Game::cleanup();
 	return 0;
 }
