@@ -20,7 +20,7 @@ public:
 	void setName(const std::string &);
 	void setSprite(const std::string &);
 	void move(int row = 0, int col = 0);
-	void render();
+	virtual void render();
 };
 
 #endif

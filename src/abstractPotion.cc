@@ -7,6 +7,12 @@
 
 std::set<std::string> AbstractPotion::discoveredPotions;
 
+namespace {
+	void setPotionSprite(Renderable *obj) {
+		obj->setSprite("P");
+	}
+}
+
 /**
  *	By default, set effect to null. Also, set potion value to be the (unmodified)
  *	potion strength.
@@ -14,7 +20,9 @@ std::set<std::string> AbstractPotion::discoveredPotions;
 AbstractPotion::AbstractPotion()
 	: AbstractItem(Game::getInstance()->getPotionStrength(false))
 	, effect(NULL)
-	{}
+{
+	setPotionSprite(this);
+}
 
 /**
  *	Delete the effect. If effect is NULL, this won't do anything.
@@ -78,8 +86,4 @@ void AbstractPotion::pickUp() {
 
 	Game::getInstance()->getPlayer()->getInventory()->addItem(this);
 	this->destroy = false;
-}
-
-std::string AbstractPotion::render() {
-	return "P";
 }

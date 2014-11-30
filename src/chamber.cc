@@ -40,7 +40,7 @@ Chamber::~Chamber() {
 /**
  *	Creates and adds a Tile to this Chamber.
  */
-void Chamber::addTile(int r, int c, TileType tt, Renderable *re) {
+Tile *Chamber::addTile(int r, int c, TileType tt, Renderable *re) {
 	std::pair<int, int> p = std::make_pair(r, c);
 	// Only add the Tile if it's not already registered. This should always be
 	// the case anyway, but it doesn't hurt to check...
@@ -48,12 +48,13 @@ void Chamber::addTile(int r, int c, TileType tt, Renderable *re) {
 		this->tiles[p] = new Tile(r, c, tt, re);
 		this->tiles[p]->setChamber(this);
 	}
+	return this->tiles[p];
 }
 
 /**
  *	Registers a Tile as being part of this Chamber.
  */
-void Chamber::addTile(Tile *t) {
+Tile *Chamber::addTile(Tile *t) {
 	std::pair<int, int> p = std::make_pair(t->getR(), t->getC());
 	// Only add the Tile if it's not already registered. This should always be
 	// the case anyway, but it doesn't hurt to check...
@@ -61,6 +62,7 @@ void Chamber::addTile(Tile *t) {
 		this->tiles[p] = t;
 		this->tiles[p]->setChamber(this);
 	}
+	return this->tiles[p];
 }
 
 /**
@@ -138,7 +140,7 @@ void Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 		tt = TileType::FloorTile;
 		switch (store[r][c]) {
 			case '@':
-				//thing = Game::getInstance()->getPlayer();
+				thing = Game::getInstance()->getPlayer();
 				this->getFloor()->setPlayerPos(r, c);
 				break;
 			case 'H':
@@ -200,11 +202,14 @@ void Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 				break;
 		}
 	}
+	Tile *tilePtr = this->addTile(r, c, tt, thing);
 	if (thing != NULL) {
-		std::cerr << "Chamber - setting thing to be " << store[r][c] << '\n';
-		thing ->setSprite("" + store[r][c]);
-	}
-	this->addTile(r, c, tt, thing);
+		std::cerr << "Chamber - setting thing to be " << std::string(1, store[r][c]) << '\n';
+		thing->setSprite(std::string(1, store[r][c]));
+	} else {
+		tilePtr->setSprite(std::string(1, store[r][c]));
+	} /**/ // Old and outdated; Use tile->render() to take care of types
+	
 
 	// Recursively apply to all neighbours
 	if (store[r][c] == '|' || store[r][c] == '-' || store[r][c] == '+') {

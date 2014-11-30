@@ -66,7 +66,6 @@ public:
 	void getHitBy(Merchant*);
 	void getHitBy(Dragon*);
 	void strike(AbstractEnemy*);
-	std::string render();
 	// END pipe through
 
 	// Effects should be removed when expired. At the end of each tick phase,

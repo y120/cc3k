@@ -4,7 +4,15 @@
 
 bool Merchant::hostile = false;
 
-Merchant::Merchant() : AbstractEnemy(30, 70, 5) {}
+namespace {
+	void setMerchantSprite(Renderable *obj) {
+		obj->setSprite("M");
+	}
+}
+
+Merchant::Merchant() : AbstractEnemy(30, 70, 5) {
+	setMerchantSprite(this);
+}
 
 /**
  *	Default getHitBy function, here as part of the Visitor pattern.
@@ -69,8 +77,4 @@ void Merchant::doTurn() {
 			}
 		}
 	}
-}
-
-std::string Merchant::render() {
-	return "M";
 }

@@ -11,8 +11,6 @@ public:
 	void strike(Player*);
 
 	void die();
-
-	std::string render();
 };
 
 #endif

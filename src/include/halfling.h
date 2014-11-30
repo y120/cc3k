@@ -9,8 +9,6 @@ public:
 
 	void getHitBy(Player*);
 	void strike(Player*);
-
-	std::string render();
 };
 
 #endif

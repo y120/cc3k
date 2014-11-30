@@ -18,8 +18,8 @@ public:
 	Chamber(Floor *, std::vector<std::string> &, int, int);
 	~Chamber();
 
-	void addTile(int, int, TileType, Renderable*);
-	void addTile(Tile*);
+	Tile *addTile(int, int, TileType, Renderable*);
+	Tile *addTile(Tile*);
 
 	Tile *getTile(int, int) const;
 	Tile *getUnoccupiedTile() const;

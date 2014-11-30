@@ -6,10 +6,18 @@
 #include "utilities.h"
 #include <cmath>
 
+namespace {
+	void setDragonSprite(Renderable *obj) {
+		obj->setSprite("D");
+	}
+}
+
 /**
  *	On initialisation, set the hoard that the Dragon guards.
  */
-Dragon::Dragon(Tile *hoard) : AbstractEnemy(150, 20, 20), hoard(hoard) { }
+Dragon::Dragon(Tile *hoard) : AbstractEnemy(150, 20, 20), hoard(hoard) {
+	setDragonSprite(this); 
+}
 /*
  *	Note that we don't use a destructor because the Dragon does not own the
  *	Tile, it just knows about it.
@@ -38,11 +46,6 @@ void Dragon::doTurn() {
 	if (this->canHitPlayer()) {
 		this->strike(Game::getInstance()->getPlayer());
 	} 
-}
-
-// Self-explanatory.
-std::string Dragon::render() {
-	return "D";
 }
 
 /**

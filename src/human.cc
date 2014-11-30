@@ -8,7 +8,15 @@
 #include <vector>
 #include <sstream>
 
-Human::Human() : AbstractEnemy(100, 20, 30) {}
+namespace {
+	void setHumanSprite(Renderable *obj) {
+		obj->setSprite("H");
+	}
+}
+
+Human::Human() : AbstractEnemy(100, 20, 30) {
+	setHumanSprite(this);
+}
 
 /**
  *	Default getHitBy function, here as part of the Visitor pattern.
@@ -60,8 +68,4 @@ void Human::die() {
 
 	// Finally, call the base death handler.
 	Character::die();
-}
-
-std::string Human::render() {
-	return "H";
 }

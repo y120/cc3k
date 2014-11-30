@@ -2,7 +2,15 @@
 #include "player.h"
 #include "vampire.h"
 
-Dwarf::Dwarf() : AbstractEnemy(100, 20, 30) {}
+namespace {
+	void setDwarfSprite(Renderable *obj) {
+		obj->setSprite("W");
+	}
+}
+
+Dwarf::Dwarf() : AbstractEnemy(100, 20, 30) {
+	setDwarfSprite(this);
+}
 
 /**
  *	Default getHitBy function, here as part of the Visitor pattern.
@@ -30,8 +38,4 @@ void Dwarf::getHitBy(Vampire *v) {
  */
 void Dwarf::strike(Player *p) {
 	p->getHitBy(this);
-}
-
-std::string Dwarf::render() {
-	return "W";
 }

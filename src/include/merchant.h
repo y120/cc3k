@@ -17,8 +17,6 @@ public:
 
 	void doTurn();
 
-	std::string render();
-
 private:
 	static bool hostile;
 };

@@ -16,8 +16,6 @@ public:
 	// since it's implemented in DragonHoard!
 	void doTurn();
 
-	std::string render();
-
 protected:
 	bool canHitPlayer() const;
 

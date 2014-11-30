@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "renderable.h"
 #include "tileType.h"
 
@@ -41,6 +42,7 @@ public:
 	// Changed display code - render() no longer returns a string
 	//std::string render();
 
+	std::map<TileType, Renderable> &getTileset();
 	void render();
 
 private:

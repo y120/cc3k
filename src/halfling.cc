@@ -1,11 +1,18 @@
 #include "halfling.h"
 #include "player.h"
 
+namespace {
+	void setHalflingSprite(Renderable *obj) {
+		obj->setSprite("L");
+	}
+}
+
 /**
  *	Halfling racial ability: 50% chance to dodge.
  */
 Halfling::Halfling() : AbstractEnemy(100, 15, 20) {
 	this->setDodge(50);
+	setHalflingSprite(this);
 }
 
 /**
@@ -20,8 +27,4 @@ void Halfling::getHitBy(Player *p) {
  */
 void Halfling::strike(Player *p) {
 	p->getHitBy(this);
-}
-
-std::string Halfling::render() {
-	return "L";
 }

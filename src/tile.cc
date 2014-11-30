@@ -114,12 +114,24 @@ void Tile::setChamber(Chamber *ch) {
 	chamber = ch;
 }
 
+std::map<TileType, Renderable> &Tile::getTileset() {
+	static std::map<TileType, Renderable> tileset;
+	tileset[TileType::NoTile].setSprite("?");
+	tileset[TileType::FloorTile].setSprite(".");
+	tileset[TileType::WallTile].setSprite("X");
+	tileset[TileType::DoorTile].setSprite("+");
+	tileset[TileType::PassageTile].setSprite("#");
+	tileset[TileType::ExitTile].setSprite("\\");
+	return tileset;
+}
+
 void Tile::render() {
 	// If tile is empty, render the tile itself
 	// If graphics are implemented, remove the if statement as the
 	// tile ought to be rendered anyway
 	if (contents == NULL) {
-		Renderable::render();
+		getTileset()[getTileType()].move(this->getR(), this->getC());
+		getTileset()[getTileType()].render();
 	} else {
 		contents->render();
 	}

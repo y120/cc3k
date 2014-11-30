@@ -16,8 +16,6 @@ public:
 
 	virtual bool canPickUp() const;
 	void pickUp();
-
-	std::string render();
 };
 
 #endif

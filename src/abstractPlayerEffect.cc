@@ -152,9 +152,6 @@ void AbstractPlayerEffect::getHitBy(Dragon* e) {
 void AbstractPlayerEffect::strike(AbstractEnemy *e) {
 	base->strike(e);
 }
-std::string AbstractPlayerEffect::render() {
-	return base->render();
-}
 void AbstractPlayerEffect::addScore(int s) {
 	base->addScore(s);
 }

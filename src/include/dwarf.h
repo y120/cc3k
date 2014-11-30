@@ -13,8 +13,6 @@ public:
 	void getHitBy(Player*);
 	void getHitBy(Vampire*);
 	void strike(Player*);
-
-	std::string render();
 };
 
 #endif

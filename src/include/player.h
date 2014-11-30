@@ -51,9 +51,6 @@ public:
 	virtual void die();
 	virtual Player* tickEffects();
 
-	// Implement from Renderable.
-	virtual std::string render();
-
 protected:
 	Player(); // We provide an empty constructor for the Decorator.
 	Player(int, int, int);

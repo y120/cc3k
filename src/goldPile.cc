@@ -4,7 +4,15 @@
 #include "turnSummary.h"
 #include <sstream>
 
-GoldPile::GoldPile(GoldPileSize size) : AbstractItem(static_cast<int>(size)) {}
+namespace {
+	void setGoldSprite(Renderable *obj) {
+		obj->setSprite("G");
+	}
+}
+
+GoldPile::GoldPile(GoldPileSize size) : AbstractItem(static_cast<int>(size)) {
+	setGoldSprite(this);
+}
 
 /**
  *	Whether the GoldPile can be picked up. By default, this is always true.
@@ -24,6 +32,3 @@ void GoldPile::pickUp() {
 	TurnSummary::add(oss.str());
 }
 
-std::string GoldPile::render() {
-	return "G";
-}

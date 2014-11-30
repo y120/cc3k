@@ -28,8 +28,6 @@ public:
 	bool canPickUp() const;
 	void pickUp();
 
-	std::string render();
-
 protected:
 	AbstractPlayerEffect *effect;
 

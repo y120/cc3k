@@ -5,8 +5,16 @@
 #include "floor.h"
 #include "tile.h"
 
+namespace {
+	void setPlayerSprite(Renderable *obj) {
+		obj->setSprite("@");
+	}
+}
+
 // Protected constructor, does nothing.
-Player::Player() {}
+Player::Player() {
+	setPlayerSprite(this);
+}
 
 /**
  *	Constructs a Player. All Players have a base 50% dodge stat. Optionally
@@ -14,6 +22,7 @@ Player::Player() {}
  */
 Player::Player(int hp, int atk, int def) : Character(hp, atk, def, 50), score(0),
 	gold(0) {
+	setPlayerSprite(this);
 	if (Game::getInstance()->hasDLC(DLC::Inventory)) {
 		this->inventory = new Inventory();
 	}
@@ -91,8 +100,4 @@ void Player::die() {
 
 Player* Player::tickEffects() {
 	return this;
-}
-
-std::string Player::render() {
-	return "@";
 }
