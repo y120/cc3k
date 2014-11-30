@@ -128,8 +128,10 @@ void Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 	Renderable *thing = NULL;
 	if (store[r][c] == '.') {
 		tt = TileType::FloorTile;
-	} else if (store[r][c] == '|' || store[r][c] == '-') {
-		tt = TileType::WallTile;
+	} else if (store[r][c] == '-') {
+		tt = TileType::WallTileH;
+	} else if (store[r][c] == '|') {
+		tt = TileType::WallTileV;
 	} else if (store[r][c] == '+') {
 		tt = TileType::DoorTile;
 	} else if (store[r][c] == '#') {		// Should never happen
@@ -202,13 +204,7 @@ void Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 				break;
 		}
 	}
-	Tile *tilePtr = this->addTile(r, c, tt, thing);
-	if (thing != NULL) {
-		std::cerr << "Chamber - setting thing to be " << std::string(1, store[r][c]) << '\n';
-		thing->setSprite(std::string(1, store[r][c]));
-	} else {
-		tilePtr->setSprite(std::string(1, store[r][c]));
-	} /**/ // Old and outdated; Use tile->render() to take care of types
+	this->addTile(r, c, tt, thing);
 
 	// Recursively apply to all neighbours
 	if (store[r][c] == '|' || store[r][c] == '-' || store[r][c] == '+') {

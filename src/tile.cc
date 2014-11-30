@@ -118,7 +118,8 @@ std::map<TileType, Renderable> &Tile::getTileset() {
 	static std::map<TileType, Renderable> tileset;
 	tileset[TileType::NoTile].setSprite("?");
 	tileset[TileType::FloorTile].setSprite(".");
-	tileset[TileType::WallTile].setSprite("X");
+	tileset[TileType::WallTileH].setSprite("-");
+	tileset[TileType::WallTileV].setSprite("|");
 	tileset[TileType::DoorTile].setSprite("+");
 	tileset[TileType::PassageTile].setSprite("#");
 	tileset[TileType::ExitTile].setSprite("\\");
@@ -133,6 +134,7 @@ void Tile::render() {
 		getTileset()[getTileType()].move(this->getR(), this->getC());
 		getTileset()[getTileType()].render();
 	} else {
+		contents->move(this->getR(), this->getC());
 		contents->render();
 	}
 }

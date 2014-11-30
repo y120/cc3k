@@ -4,7 +4,8 @@
 enum class TileType {
 	NoTile = 0,
 	FloorTile,
-	WallTile,
+	WallTileH,
+	WallTileV,
 	DoorTile,
 	PassageTile,
 	ExitTile
