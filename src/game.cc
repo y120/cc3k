@@ -23,11 +23,33 @@
 	#define MAX_GOLD_PILES 10
 #endif
 
-Game::Game() : player(NULL), currentFloor(1), potionModifier(1) {}
+Game *Game::instance = NULL;
+
+Game::Game() : player(NULL), currentFloor(1), potionModifier(1) {
+	// NOTE: We cannot initialise Floors here because that introduces infinite
+	// recursion... oops!
+}
+Game::~Game() {
+	delete this->player;
+	for (int i = 0; i < 5; i++) {
+		delete this->floors[i];
+	}
+}
 
 Game* Game::getInstance() {
-	static Game instance;
-	return &instance;
+	if (!Game::instance) {
+		Game::instance = new Game();
+		for (int i = 0; i < 5; i++) {
+			Game::instance->floors[i] = new Floor();
+		}
+		atexit(Game::cleanup);
+	}
+	return Game::instance;
+}
+
+void Game::cleanup() {
+	delete Game::instance;
+	Game::instance = NULL;
 }
 
 bool Game::hasDLC(DLC dlc) const {
@@ -44,6 +66,10 @@ void Game::setDLC(DLC dlc, bool b) {
 
 Player* Game::getPlayer() {
 	return this->player;
+}
+
+void Game::setPlayer(Player *player) {
+	this->player = player;
 }
 
 void Game::addPlayerEffect(AbstractPlayerEffect *effect) {
