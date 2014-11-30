@@ -9,6 +9,13 @@
 Shade::Shade() : Player(125, 25, 25) {}
 
 /**
+ *	Returns the player race
+ */
+std::string Shade::getRace() const {
+	return "Shade";
+}
+
+/**
  *	Default getHitBy function, here as part of the Visitor pattern.
  */
 void Shade::getHitBy(AbstractEnemy *e) {

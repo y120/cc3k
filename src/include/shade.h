@@ -9,6 +9,8 @@ class Shade : public Player {
 public:
 	Shade();
 
+	std::string getRace() const;
+
 	void getHitBy(AbstractEnemy*);
 	void strike(AbstractEnemy*);
 };

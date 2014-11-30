@@ -9,6 +9,8 @@ class Drow : public Player {
 public:
 	Drow();
 
+	std::string getRace() const;
+
 	void getHitBy(AbstractEnemy*);
 	void strike(AbstractEnemy*);
 };

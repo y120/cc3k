@@ -22,6 +22,7 @@ public:
 	// Score is the same as total gold earned (including spent gold).
 	virtual int getScore() const;
 	virtual int getGold() const;
+	virtual std::string getRace() const = 0;
 
 	// If positive, addGold() should also addScore().
 	virtual void addGold(int);

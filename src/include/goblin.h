@@ -9,6 +9,8 @@ class Goblin : public Player {
 public:
 	Goblin();
 
+	std::string getRace() const;
+
 	void getHitBy(AbstractEnemy*);
 	void getHitBy(Orc*);
 	void strike(AbstractEnemy*);

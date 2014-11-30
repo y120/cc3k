@@ -9,6 +9,8 @@ class Vampire : public Player {
 public:
 	Vampire();
 
+	std::string getRace() const;
+
 	void getHitBy(AbstractEnemy*);
 	void strike(AbstractEnemy*);
 };

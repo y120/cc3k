@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
+#include <sstream>
 
 #ifndef POTION_STRENGTH
 	#define POTION_STRENGTH 5
@@ -99,6 +100,27 @@ void Game::loop() {
 	// TODO
 }
 
+void Game::renderUi() {
+	std::ostringstream oss;
+	oss << "Race: " << player->getRace()
+		<< " Gold: " << player->getGold();
+	Display::getInstance()->draw(oss.str(), 25, 0);
+	oss.str("");
+	oss << "Floor " << currentFloor;
+	Display::getInstance()->draw(oss.str(), 25, 77 - oss.str().length());
+	oss.str("");
+	oss << "HP: " << player->getHP();
+	Display::getInstance()->draw(oss.str(), 26, 0);
+	oss.str("");
+	oss << "Atk: " << player->getAtk();
+	Display::getInstance()->draw(oss.str(), 27, 0);
+	oss.str("");
+	oss << "Def: " << player->getDef();
+	Display::getInstance()->draw(oss.str(), 28, 0);
+	Display::getInstance()->draw("Action: "/* + message*/, 29, 0);
+	/**** TODO: Action message *****/
+}
+
 void Game::render() {
 	//std::cerr << "Game: render " << std::endl;
 	floors[currentFloor]->render();
@@ -112,6 +134,7 @@ void Game::render() {
 		Display::getInstance()->draw("|", l0, 0);
 		Display::getInstance()->draw("|", l0, 78);
 	}
+	renderUi();
 	Display::getInstance()->render();
 }
 

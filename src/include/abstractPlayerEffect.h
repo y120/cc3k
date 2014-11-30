@@ -28,6 +28,7 @@ public:
 	virtual int getAtk() const;
 	virtual int getDef() const;
 	virtual int getDodge() const;
+	std::string getRace() const;
 
 	// BEGIN pipe through
 	int getHP() const;

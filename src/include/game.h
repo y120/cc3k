@@ -35,6 +35,7 @@ public:
 
 	// The main game loop.
 	void loop();
+	void renderUi();
 	void render();
 
 	// Various helpers!

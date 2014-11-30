@@ -22,6 +22,9 @@ int AbstractPlayerEffect::getDef() const {
 int AbstractPlayerEffect::getDodge() const {
 	return base->getDodge();
 }
+std::string AbstractPlayerEffect::getRace() const {
+	return "AbstractPlayerEffect";
+}
 
 /**
  *	Applies a tick of the effect.
