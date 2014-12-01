@@ -4,6 +4,8 @@
 #include "player.h"
 #include "abstractEnemy.h"
 #include "floor.h"
+#include "tile.h"
+#include "tileType.h"
 #include "dlc.h"
 #include "basePlayers.h"
 #include <algorithm>
@@ -186,14 +188,21 @@ void Game::loop(std::string floorFile) {
 		while (!gameOver()) {
 			render();
 			getInput();
+			if (player->getTile()->getTileType() == TileType::ExitTile) {
+				std::ostringstream oss;
+				oss << "Level " << currentFloor << " Cleared!";
+				Display::getInstance()->addMessage(oss.str());
+				nextLevel();
+				continue;
+			}
 			std::vector<AbstractEnemy*> &flEnemies = getFloor()->getEnemies();
 			std::cerr << &flEnemies << std::endl;
 			for (int l0 = 0; l0 < (int)flEnemies.size(); l0++) {
 				if ((flEnemies[l0] != NULL) && (!flEnemies[l0]->isDead())) {
-					std::cerr << "gameloop - enemy" << l0 << '-' << flEnemies[l0] << " doing turn\n";
-					std::cerr << flEnemies[l0]->getR() << ' ' << flEnemies[l0]->getC() << '\n';
+					//std::cerr << "gameloop - enemy" << l0 << '-' << flEnemies[l0] << " doing turn\n";
+					//std::cerr << flEnemies[l0]->getR() << ' ' << flEnemies[l0]->getC() << '\n';
 					flEnemies[l0]->doTurn();
-					std::cerr << "Gameloop - enemy done turn " << std::endl;
+					//std::cerr << "Gameloop - enemy done turn " << std::endl;
 				}
 			}
 		}
@@ -201,26 +210,71 @@ void Game::loop(std::string floorFile) {
 }
 
 void Game::getInput() {
-	std::string input;
+	std::string direc[3][3] = {
+		{"North-West", "North", "North-East"},
+		{"West", "Nowhere", "East"},
+		{"South-West", "South", "South-East"}
+	};
+	std::string input, direction;
 	std::cin >> input;
 	transform(input.begin(), input.end(), input.begin(), ::tolower);
 
-	if (input[0] == 'u') {
-		// use potion
-	} else if (input[0] == 'a') {
-		// ATTACK!!
-	} else if (input[0] == 'r') {
-		// restart
+	if (input[0] == 'u' || input[0] == 'a') {
+		std::cin >> direction;
+	} else if (input[0] == 'r') {	// restart
+		gameOver(true);
+	} else {						// move
+		direction = input;
+		input = "m";
+	}
+
+	transform(direction.begin(), direction.end(), direction.begin(), ::tolower);
+	int dr = 0, dc = 0;
+	if (direction[0] == 'n') {
+		dr = -1;
+		direction = direction.substr(1, direction.length());
+	} else if (direction[0] == 's') {
+		dr = 1;
+		direction = direction.substr(1, direction.length());
+	}
+	if (direction[0] == 'e') {
+		dc = 1;
+	} else if (direction[0] == 'w') {
+		dc = -1;
+	}
+
+	if (input[0] == 'a') {
+		// attack
+		// note all attack messages are handled by character classes
+		
+	} else if (input[0] == 'u') {
+		// Use item!
+
+	} else if (input[0] == 'm') {
+		// MOVE!!!!
+		if (player->canMove(dr, dc)) {
+			// great success!
+			player->move(dr, dc);
+			Display::getInstance()->addMessage(
+				player->getName() + " moves " +
+				direc[dr + 1][dc + 1] + "."
+			);
+		} else {
+			// oh noes!
+			Display::getInstance()->addMessage(
+				player->getName() + " can't move " + 
+				direc[dr + 1][dc + 1] + "!"
+			);
+		}
 	}
 }
 
 // called once player reaches last level
 void Game::nextLevel() {
+	initFloor(currentFloor + 1);
 	if (currentFloor == 5) {
 		// YOU WIN!
 		gameOver(true);
-	} else {
-		initFloor(currentFloor + 1);
 	}
 }
 
