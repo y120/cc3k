@@ -78,6 +78,7 @@ void Character::die() {
 	std::ostringstream oss;
 	oss << this->getName() << " dies.";
 	Display::getInstance()->addMessage(oss.str());
+	this->getTile()->setContents(NULL);
 	this->r = -1;
 	this->c = -1;
 }
@@ -88,7 +89,9 @@ void Character::die() {
  */
 int Character::calculateDamage(Character *other) const {
 //std::cerr << "Calculating damage. My def: " << getDef() << ", atk: " << other->getAtk() << '\n';
-	return std::ceil(100.0 / (100 + this->getDef()) * other->getAtk());
+	int atk = std::max(0, other->getAtk());
+	int def = this->getDef();
+	return std::ceil(100.0 / (100 + def) * atk);
 }
 
 void Character::getHitBy(Character *other) {
@@ -104,10 +107,10 @@ void Character::getHitBy(Character *other) {
 
 	this->hit = true;
 	int dmg = this->calculateDamage(other);
-	this->addHP(-dmg);
 	oss << other->getName() << " hits " << this->getName() << " for " << dmg <<
-		" damage! (" << this->getHP() << " HP remaining.)";
+		" damage! (" << std::max(0, this->getHP() - dmg) << " HP remaining.)";
 	Display::getInstance()->addMessage(oss.str());
+	this->addHP(-dmg);
 }
 
 bool Character::wasHit() const {

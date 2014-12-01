@@ -11,7 +11,3 @@ AbstractItem::~AbstractItem() {}
 int AbstractItem::getValue() const {
 	return this->value;
 }
-
-std::string AbstractItem::getName(bool) const {
-	return Renderable::getName();
-}

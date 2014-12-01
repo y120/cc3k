@@ -101,7 +101,8 @@ void Merchant::die() {
 
 		// Also log it...
 		std::ostringstream oss;
-		oss << "Player picked up " << gold << " gold!";
+		oss << Game::getInstance()->getPlayer()->getName() << "picks up " <<
+			gold << " gold!";
 		Display::getInstance()->addMessage(oss.str());
 
 		// ... and clear the Tile.

@@ -35,12 +35,13 @@ public:
 	Floor* getFloor(int) const;
 
 	// The main game loop.
+	void displayMenu();
 	Player *titleScreen();
 	void loop(std::string);
-	void getInput();
-	void attack(int, int);
-	void use(int, int);
-	void move(int, int);
+	bool getInput();
+	bool attack(int, int);
+	bool use(int, int);
+	bool move(int, int);
 	void nextLevel();
 	void renderUi();
 	void render();
@@ -74,6 +75,9 @@ private:
 	int currentFloor;
 	Floor *floors[5];
 	double potionModifier;
+
+	bool won;
+	int score;
 
 	std::set<DLC> dlcs;
 

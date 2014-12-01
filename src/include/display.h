@@ -23,6 +23,7 @@ public:
 	void setOutput(std::ostream *);
 	void resize(int row, int col);
 	void addMessage(const std::string &);
+	void clearMessages();
 	void drawMessage();
 	void draw(const Renderable *);
 	void draw(const std::string &, int row = 0, int col = 0);

@@ -308,6 +308,7 @@ void Floor::generateGoldPile() {
 			// Now create the dragon!
 			Dragon *dragon = new Dragon(tile);
 			dragon->setFloor(this->id);
+			dragon->moveTo(dragonTile);
 			this->addEnemy(dragon);
 			// Then, create the Hoard.
 			goldPile = new DragonHoard(dragon);

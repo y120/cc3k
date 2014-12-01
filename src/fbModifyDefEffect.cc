@@ -1,4 +1,5 @@
 #include "fbModifyDefEffect.h"
+#include "game.h"
 
 /**
  *	Constructor: pass base and floor through, then set modifier.
@@ -11,5 +12,5 @@ int FBModifyDefEffect::getDef() const {
 }
 
 FBModifyDefEffect* FBModifyDefEffect::clone() {
-	return new FBModifyDefEffect(NULL, this->floor, this->modifier);
+	return new FBModifyDefEffect(NULL, Game::getInstance()->getFloorNumber(), this->modifier);
 };

@@ -2,6 +2,8 @@
 
 #include "game.h"
 #include "abstractEnemy.h"
+#include "display.h"
+#include "dwarf.h"
 
 /**
  *	Initialise Vampire stats.
@@ -37,6 +39,14 @@ void Vampire::getHitBy(AbstractEnemy *e) {
 void Vampire::strike(AbstractEnemy *e) {
 	e->getHitBy(this);
 	if (e->wasHit()) {
-		this->addHP(5);
+		if (dynamic_cast<Dwarf*>(e)) {
+			this->addHP(-5);
+			Display::getInstance()->addMessage(this->getName() + " was poisoned" +
+				" by " + e->getName() + "'s blood for 5 HP!");
+		} else {
+			this->addHP(5);
+			Display::getInstance()->addMessage(this->getName() + " stole 5 HP from " +
+				e->getName() + "!");
+		}
 	}
 }

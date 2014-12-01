@@ -13,6 +13,7 @@ public:
 	virtual ~AbstractPotion();
 
 	// When passed true, shows even if not discovered.
+	std::string getName() const;
 	std::string getName(bool) const;
 
 	// Returns true if we've "discovered" a potion.

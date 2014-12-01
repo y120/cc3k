@@ -53,32 +53,28 @@ void AbstractEnemy::die() {
 		// With the Inventory DLC active, physically drop the GoldPile.
 		GoldPile *goldPile = new GoldPile(gps);
 		tile->setContents(goldPile);
+		// Go up to the super.
+		Character::die();
 	} else {
 		// Without the Inventory DLC, add the gold directly.
 		int gold = static_cast<int>(gps);
 		Game::getInstance()->getPlayer()->addGold(gold);
 
+		// Go up to the super.
+		Character::die();
+
 		// Also log it...
 		std::ostringstream oss;
-		oss << "Player picked up " << gold << " gold!";
+		oss << Game::getInstance()->getPlayer()->getName() << "picks up " <<
+			gold << " gold!";
 		Display::getInstance()->addMessage(oss.str());
 
 		// ... and clear the Tile.
 		tile->setContents(NULL);
 	}
 
-	// Go up to the super.
-	Character::die();
 	// Note: we don't need to delete this, because a reference is kept in
 	// Floor::enemies, and that will get deleted eventually.
-}
-
-/**
- *	Applies a tick of the effects.
- *	By default, this means nothing for enemies.
- */
-Character *AbstractEnemy::tickEffects() {
-	return this;
 }
 
 /**
@@ -121,7 +117,7 @@ void AbstractEnemy::doTurn() {
  *	range of 1.
  */
 bool AbstractEnemy::canHitPlayer() const {
-std::cerr << "Checking if we can hit: we're at " << getR() << " " << getC() << ", player at " << Game::getInstance()->getPlayer()->getR() << " " << Game::getInstance()->getPlayer()->getC() << '\n';
+//std::cerr << "Checking if we can hit: we're at " << getR() << " " << getC() << ", player at " << Game::getInstance()->getPlayer()->getR() << " " << Game::getInstance()->getPlayer()->getC() << '\n';
 	int distance = Utilities::distance(this->getR(), this->getC(),
 		Game::getInstance()->getPlayer()->getR(), Game::getInstance()->getPlayer()->getC());
 	return distance <= 1;

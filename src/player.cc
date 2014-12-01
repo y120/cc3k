@@ -73,7 +73,7 @@ bool Player::canMoveTo(int r, int c) const {
 }
 
 bool Player::canMoveTo(Tile *tile) const {
-	return tile->isPassableByPlayer();
+	return tile && tile->isPassableByPlayer();
 }
 
 void Player::move(int dr, int dc) {

@@ -35,6 +35,13 @@ AbstractPotion::~AbstractPotion() {
 }
 
 /**
+ *	We add explicitly so vtable is fine.
+ */
+std::string AbstractPotion::getName() const {
+	return this->getName(false);
+}
+
+/**
  *	Fetches the name for the potion, or a default string if undiscovered.
  *
  *	@param forceShow
@@ -44,7 +51,7 @@ std::string AbstractPotion::getName(bool forceShow) const {
 	if (forceShow || AbstractPotion::hasDiscovered(this->getNameInternal())) {
 		return this->getNameInternal();
 	} else {
-		return "Unknown potion. Caveat usor.";
+		return "Unknown Potion";
 	}
 }
 
@@ -69,7 +76,9 @@ void AbstractPotion::discover() const {
 void AbstractPotion::apply() {
 	// Game::addPlayerEffect() will make a copy of the AbstractEffect. It also
 	// handles the NULL case for us.
-	Game::getInstance()->addPlayerEffect(this->effect);
+	if (this->effect) {
+		Game::getInstance()->addPlayerEffect(this->effect);
+	}
 
 	std::ostringstream oss;
 	oss << Game::getInstance()->getPlayer()->getName() << " uses " << this->getName(true);

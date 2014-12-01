@@ -36,7 +36,8 @@
 Game *Game::instance = NULL;
 
 Game::Game()
-	: bgameOver(false), player(NULL), currentFloor(0), potionModifier(1)
+	: bgameOver(false), player(NULL), currentFloor(0), potionModifier(1),
+	  won(false), score(-1)
 {
 	// NOTE: We cannot initialise Floors here because that introduces infinite
 	// recursion... oops!
@@ -53,9 +54,6 @@ Game::~Game() {
 Game* Game::getInstance() {
 	if (!Game::instance) {
 		Game::instance = new Game();
-		for (int i = 0; i < 5; i++) {
-			Game::instance->floors[i] = new Floor(i + 1);
-		}
 		atexit(Game::cleanup);
 	}
 	return Game::instance;
@@ -105,37 +103,43 @@ Floor *Game::getFloor(int floor) const {
 	return this->floors[floor - 1];
 }
 
-namespace {
-	void displayMenu() {
-		using std::cout;
-		std::string desc[] = {
-			"Generated DLC (randomly generated dungeons)",
-			"Inventory DLC (store and use items later)"
-		};
-		Display::getInstance()->draw("ChamberCrawler3000 Main Menu", 0, 0);
+void Game::displayMenu() {
+	using std::cout;
+	std::string desc[] = {
+		"Generated DLC (randomly generated dungeons)",
+		"Inventory DLC (store and use items later)"
+	};
+	Display::getInstance()->draw("ChamberCrawler3000 Main Menu", 3, 0);
 
-		// DLC select
-		Display::getInstance()->draw("Enter a number to enable or disable that DLC, or a race to start.", 2, 0);
-		std::ostringstream oss;
-		for (int i = 0; i < static_cast<int>(DLC::LAST); i++) {
-			oss.str("");
-			oss << "[";
-			oss << (Game::getInstance()->hasDLC(static_cast<DLC>(i)) ? 'X' : ' ');
-			oss << "] " << i << ": " << desc[i] << "\n";
-			Display::getInstance()->draw(oss.str(), 4 + i, 0);
-		}
-
-		// Race select
-		Display::getInstance()->draw("Races:", 4 + int(DLC::LAST), 0);
-		Display::getInstance()->draw("s: Shade. No special bonus.", 5 + int(DLC::LAST), 0);
-		Display::getInstance()->draw("d: Drow. Potions are more impactful.", 6 + int(DLC::LAST), 0);
-		Display::getInstance()->draw("v: Vampire. Steal HP on hit.", 7 + int(DLC::LAST), 0);
-		Display::getInstance()->draw("g: Goblin. Get an extra 5 gold every time you kill.", 8 + int(DLC::LAST), 0);
-		Display::getInstance()->draw("t: Troll. Regenerate health every turn.", 9 + int(DLC::LAST), 0);
-		Display::getInstance()->draw("Press q to quit.", 10 + int(DLC::LAST), 0);
-		
-		Display::getInstance()->render();
+	// DLC select
+	Display::getInstance()->draw("Enter a number to enable or disable that DLC, or a race to start.", 5, 0);
+	std::ostringstream oss;
+	for (int i = 0; i < static_cast<int>(DLC::LAST); i++) {
+		oss.str("");
+		oss << "[";
+		oss << (hasDLC(static_cast<DLC>(i)) ? 'X' : ' ');
+		oss << "] " << i << ": " << desc[i] << "\n";
+		Display::getInstance()->draw(oss.str(), 7 + i, 0);
 	}
+
+	if (score != -1) {
+		oss.str(won ? "YOU WIN!" : "GAME OVER");
+		Display::getInstance()->draw(oss.str(), 20, 39 - oss.str().length() / 2);
+		oss.str("");
+		oss << "Score: " << score;
+		Display::getInstance()->draw(oss.str(), 22, 39 - oss.str().length() / 2);
+	}
+
+	// Race select
+	Display::getInstance()->draw("Races:", 8 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("s: Shade. No special bonus.", 9 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("d: Drow. Potions are more impactful.", 10 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("v: Vampire. Steal HP on hit.", 11 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("g: Goblin. Get an extra 5 gold every time you kill.", 12 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("t: Troll. Regenerate health every turn.", 13 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("Press q to quit.", 14 + int(DLC::LAST), 0);
+	
+	Display::getInstance()->render();
 }
 
 Player* Game::titleScreen() {
@@ -166,14 +170,17 @@ Player* Game::titleScreen() {
 void Game::loop(std::string floorFile) {
 	while ((player = titleScreen()) != NULL) {
 		gameOver(false);
+		won = false;
+		Display::getInstance()->clearMessages();
 		Display::getInstance()->addMessage("Player character has spawned.");
 
 		// If no floor is specified, then behaviour depends on whether the Generated
 		// DLC is loaded. If so, generate; otherwise, load the default
 		if (floorFile == "") {
 			if (Game::getInstance()->hasDLC(DLC::Generated)) {
-				for (int i = 1; i <= 5; i++) {
-					Game::getInstance()->getFloor(i)->generate();
+				for (int i = 0; i < 5; i++) {
+					this->floors[i] = new Floor(i + 1);
+					this->floors[i]->generate();
 				}
 			} else {
 				Game::getInstance()->load("cc3kempty.txt");
@@ -188,7 +195,7 @@ void Game::loop(std::string floorFile) {
 
 		while (!gameOver()) {
 			render();
-			getInput();
+			bool doneTurn = getInput();
 			if (player->getTile()->getTileType() == TileType::ExitTile) {
 				std::ostringstream oss;
 				oss << "Level " << currentFloor << " Cleared!";
@@ -196,8 +203,11 @@ void Game::loop(std::string floorFile) {
 				nextLevel();
 				continue;
 			}
+			if (!doneTurn) {
+				continue;
+			}
 			std::vector<AbstractEnemy*> &flEnemies = getFloor()->getEnemies();
-			std::cerr << &flEnemies << std::endl;
+//std::cerr << &flEnemies << std::endl;
 			for (int l0 = 0; l0 < (int)flEnemies.size(); l0++) {
 				if ((flEnemies[l0] != NULL) && (!flEnemies[l0]->isDead())) {
 					//std::cerr << "gameloop - enemy" << l0 << '-' << flEnemies[l0] << " doing turn\n";
@@ -206,11 +216,18 @@ void Game::loop(std::string floorFile) {
 					//std::cerr << "Gameloop - enemy done turn " << std::endl;
 				}
 			}
+			player = player->tickEffects();
+		}
+		score = player->getScore();
+		delete player;
+		for (int i = 0; i < 5; i++) {
+			delete this->floors[i];
+			this->floors[i] = NULL;
 		}
 	}
 }
 
-void Game::getInput() {
+bool Game::getInput() {
 	std::string input, direction;
 	std::cin >> input;
 	transform(input.begin(), input.end(), input.begin(), ::tolower);
@@ -240,27 +257,28 @@ void Game::getInput() {
 	}
 
 	if (input[0] == 'a') {
-		attack(dr, dc);
+		return attack(dr, dc);
 	} else if (input[0] == 'u') {
-		use(dr, dc);
+		return use(dr, dc);
 	} else if (input[0] == 'm') {
 		Tile *target = getFloor()->getTile(player->getR() + dr, player->getC() + dc);
 		// if target tile is an enemy, attack it.
-		if (target->getContents() != NULL && 
+		if (target && target->getContents() && 
 	    	dynamic_cast<AbstractEnemy*>(target->getContents())) {
-			attack(dr, dc);
+			return attack(dr, dc);
 		} // if target tile is a non-potion item, use it. 
-		else if (target->getContents() != NULL &&
+		else if (target && target->getContents() &&
 			dynamic_cast<AbstractItem*>(target->getContents()) &&
 			!dynamic_cast<AbstractPotion*>(target->getContents())) {
-			use(dr, dc);
+			return use(dr, dc);
 		} else {
-			move(dr, dc);
+			return move(dr, dc);
 		}
 	}
+	return false;
 }
 
-void Game::attack(int dr, int dc) {
+bool Game::attack(int dr, int dc) {
 	static std::string direc[3][3] = {
 		{"North-West", "North", "North-East"},
 		{"West", "Nowhere", "East"},
@@ -275,14 +293,16 @@ void Game::attack(int dr, int dc) {
 			player->getName() + " can't attack " + 
 			direc[dr + 1][dc + 1] + "!"
 		);
+		return false;
 	} else {
 		// successful attack
 		// note all attack messages are handled by character classes
 		player->strike(enemy);
+		return true;
 	}
 }
 
-void Game::use(int dr, int dc) {
+bool Game::use(int dr, int dc) {
 	static std::string direc[3][3] = {
 		{"North-West", "North", "North-East"},
 		{"West", "Nowhere", "East"},
@@ -297,13 +317,16 @@ void Game::use(int dr, int dc) {
 			player->getName() + " can't use what is " + 
 			direc[dr + 1][dc + 1] + "!"
 		);
+		return false;
 	} else {
 		// item messages are also handled by character classes.
 		item->pickUp();
+		target->setContents(NULL);
+		return true;
 	}
 }
 
-void Game::move(int dr, int dc) {
+bool Game::move(int dr, int dc) {
 	static std::string direc[3][3] = {
 		{"North-West", "North", "North-East"},
 		{"West", "Nowhere", "East"},
@@ -311,17 +334,30 @@ void Game::move(int dr, int dc) {
 	};
 	if (player->canMove(dr, dc)) {
 		// great success!
-		player->move(dr, dc);
 		Display::getInstance()->addMessage(
 			player->getName() + " moves " +
 			direc[dr + 1][dc + 1] + "."
 		);
+		player->move(dr, dc);
+		return true;
 	} else {
 		// oh noes!
-		Display::getInstance()->addMessage(
-			player->getName() + " can't move " + 
-			direc[dr + 1][dc + 1] + "!"
-		);
+		if (dr == 0 && dc == 0) {
+			return false;
+		}
+		Tile *t = getFloor()->getTile(player->getR() + dr, player->getC() + dc);
+		if (t && t->getContents()) {
+			Display::getInstance()->addMessage(player->getName() + " looks " +
+				direc[dr + 1][dc + 1] + " and sees a(n) " +
+				t->getContents()->getName() + "!"
+			);
+		} else {
+			Display::getInstance()->addMessage(
+				player->getName() + " can't move " + 
+				direc[dr + 1][dc + 1] + "!"
+			);
+		}
+		return false;
 	}
 }
 
@@ -330,7 +366,10 @@ void Game::nextLevel() {
 	initFloor(currentFloor + 1);
 	if (currentFloor == 5) {
 		// YOU WIN!
+		won = true;
 		gameOver(true);
+	} else {
+		player = player->tickEffects();
 	}
 }
 
@@ -382,14 +421,12 @@ bool Game::gameOver(bool set) {
 void Game::initFloor(int flr) {
 	currentFloor = flr;
 	player->setFloor(flr);
-	player->move(floors[currentFloor]->getPlayerR(), floors[currentFloor]->getPlayerC());
+	player->moveTo(getFloor()->getPlayerR(), getFloor()->getPlayerC());
 }
 
 void Game::load(std::string filename) {
 	std::ifstream fin(filename.c_str());
 	for (int l0 = 0; l0 < 5; l0++) {
-		//std::cerr << "Game:load " << l0 << std::endl;
-		delete floors[l0];
 		floors[l0] = new Floor(l0 + 1, fin);
 	}
 }

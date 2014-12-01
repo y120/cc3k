@@ -38,6 +38,10 @@ void Display::addMessage(const string &msg) {
 	messageHistory.push_back(msg);
 }
 
+void Display::clearMessages() {
+	messageHistory.clear();
+}
+
 void Display::draw(const Renderable *ado) {
 	draw(ado->getSprite(), ado->getR(), ado->getC());
 }

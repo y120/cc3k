@@ -39,7 +39,7 @@ public:
 
 	virtual void die();
 
-	virtual Character *tickEffects();
+	//virtual Character *tickEffects();
 
 	// By default, the Enemy's turn follows this logic: If canHitPlayer(), then
 	// attack Player. Otherwise, move a random space.

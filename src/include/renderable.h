@@ -13,7 +13,7 @@ public:
 	Renderable(int, int);
 	Renderable(std::string, int, int);
 	virtual ~Renderable();
-	std::string getName() const;
+	virtual std::string getName() const;
 	std::string getSprite() const;
 	int getR() const;
 	int getC() const;

@@ -1,4 +1,5 @@
 #include "fbModifyAtkEffect.h"
+#include "game.h"
 
 /**
  *	Constructor: pass base and floor through, then set modifier.
@@ -11,5 +12,5 @@ int FBModifyAtkEffect::getAtk() const {
 }
 
 FBModifyAtkEffect* FBModifyAtkEffect::clone() {
-	return new FBModifyAtkEffect(NULL, this->floor, this->modifier);
+	return new FBModifyAtkEffect(NULL, Game::getInstance()->getFloorNumber(), this->modifier);
 };

@@ -11,7 +11,7 @@ using namespace std;
  *	./cc3k <floorFile> <seed>
  */
 int main(int argc, char *argv[]) {
-	string floorFile = "cc3kfloor.txt";
+	string floorFile;
 	int seed = time(NULL);
 	if (argc >= 2) {
 		// Parameter one: the floor file.
@@ -22,6 +22,7 @@ int main(int argc, char *argv[]) {
 		istringstream iss(argv[2]);
 		iss >> seed;
 	}
+	Game::getInstance()->srand(seed);
 	Game::getInstance()->loop(floorFile);
 	return 0;
 }

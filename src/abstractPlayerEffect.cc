@@ -23,7 +23,7 @@ int AbstractPlayerEffect::getDodge() const {
 	return base->getDodge();
 }
 std::string AbstractPlayerEffect::getRace() const {
-	return "AbstractPlayerEffect";
+	return base->getRace();
 }
 
 /**

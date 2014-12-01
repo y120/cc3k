@@ -32,11 +32,11 @@ public:
 	virtual void moveTo(int, int);
 	virtual void moveTo(Tile*);
 
-	virtual void setMaxHP(int);
-	virtual void setHP(int);
-	virtual void setAtk(int);
-	virtual void setDef(int);
-	virtual void setDodge(int);
+	void setMaxHP(int);
+	void setHP(int);
+	void setAtk(int);
+	void setDef(int);
+	void setDodge(int);
 
 	virtual bool canMove(int, int) const = 0;
 	virtual bool canMoveTo(int, int) const = 0;
@@ -59,8 +59,10 @@ public:
 	/**
 	 *	Applies a tick of each effect, checks for effect expiry, and returns the
 	 *	new, potentially undecorated Character.
+	 *
+	 *	Removed (enemies have no effects).
 	 */
-	virtual Character* tickEffects() = 0;
+	//virtual Character* tickEffects() = 0;
 
 	// do not implement render() here!
 

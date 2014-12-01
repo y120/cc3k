@@ -11,7 +11,6 @@ public:
 	Dwarf();
 
 	void getHitBy(Player*);
-	void getHitBy(Vampire*);
 	void strike(Player*);
 };
 

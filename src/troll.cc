@@ -2,6 +2,8 @@
 
 #include "game.h"
 #include "abstractEnemy.h"
+#include "display.h"
+#include <sstream>
 
 /**
  *	Initialise Troll stats.
@@ -33,6 +35,14 @@ void Troll::strike(AbstractEnemy *e) {
  *	Troll racial ability: regenerate 5 HP per turn.
  */
 Player* Troll::tickEffects() {
+	// TODO
+	int dHP = this->getHP();
 	this->addHP(5);
+	dHP = this->getHP() - dHP;
+	if (dHP) {
+		std::ostringstream oss;
+		oss << this->getName() << "regenerates " << dHP << " HP.";
+		Display::getInstance()->addMessage(oss.str());
+	}
 	return this;
 }
