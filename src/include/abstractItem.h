@@ -13,6 +13,7 @@ public:
 	virtual void pickUp() = 0;
 
 	int getValue() const;
+	virtual std::string getName(bool) const;
 
 	// do not implement render()!
 

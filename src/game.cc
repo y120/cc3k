@@ -1,8 +1,9 @@
 #include "game.h"
-#include "display.h"
 #include "abstractPlayerEffect.h"
 #include "player.h"
 #include "abstractEnemy.h"
+#include "abstractItem.h"
+#include "abstractPotion.h"
 #include "floor.h"
 #include "tile.h"
 #include "tileType.h"
@@ -210,11 +211,6 @@ void Game::loop(std::string floorFile) {
 }
 
 void Game::getInput() {
-	std::string direc[3][3] = {
-		{"North-West", "North", "North-East"},
-		{"West", "Nowhere", "East"},
-		{"South-West", "South", "South-East"}
-	};
 	std::string input, direction;
 	std::cin >> input;
 	transform(input.begin(), input.end(), input.begin(), ::tolower);
@@ -244,28 +240,88 @@ void Game::getInput() {
 	}
 
 	if (input[0] == 'a') {
-		// attack
-		// note all attack messages are handled by character classes
-		
+		attack(dr, dc);
 	} else if (input[0] == 'u') {
-		// Use item!
-
+		use(dr, dc);
 	} else if (input[0] == 'm') {
-		// MOVE!!!!
-		if (player->canMove(dr, dc)) {
-			// great success!
-			player->move(dr, dc);
-			Display::getInstance()->addMessage(
-				player->getName() + " moves " +
-				direc[dr + 1][dc + 1] + "."
-			);
+		Tile *target = getFloor()->getTile(player->getR() + dr, player->getC() + dc);
+		// if target tile is an enemy, attack it.
+		if (target->getContents() != NULL && 
+	    	dynamic_cast<AbstractEnemy*>(target->getContents())) {
+			attack(dr, dc);
+		} // if target tile is a non-potion item, use it. 
+		else if (target->getContents() != NULL &&
+			dynamic_cast<AbstractItem*>(target->getContents()) &&
+			!dynamic_cast<AbstractPotion*>(target->getContents())) {
+			use(dr, dc);
 		} else {
-			// oh noes!
-			Display::getInstance()->addMessage(
-				player->getName() + " can't move " + 
-				direc[dr + 1][dc + 1] + "!"
-			);
+			move(dr, dc);
 		}
+	}
+}
+
+void Game::attack(int dr, int dc) {
+	static std::string direc[3][3] = {
+		{"North-West", "North", "North-East"},
+		{"West", "Nowhere", "East"},
+		{"South-West", "South", "South-East"}
+	};
+	Tile *target = getFloor()->getTile(player->getR() + dr, player->getC() + dc);
+	AbstractEnemy *enemy;
+	if (target->getContents() == NULL || 
+	    !(enemy = dynamic_cast<AbstractEnemy*>(target->getContents()))) {
+		// failed!
+		Display::getInstance()->addMessage(
+			player->getName() + " can't attack " + 
+			direc[dr + 1][dc + 1] + "!"
+		);
+	} else {
+		// successful attack
+		// note all attack messages are handled by character classes
+		player->strike(enemy);
+	}
+}
+
+void Game::use(int dr, int dc) {
+	static std::string direc[3][3] = {
+		{"North-West", "North", "North-East"},
+		{"West", "Nowhere", "East"},
+		{"South-West", "South", "South-East"}
+	};
+	Tile *target = getFloor()->getTile(player->getR() + dr, player->getC() + dc);
+	AbstractItem *item;
+	if (target->getContents() == NULL || 
+	    !(item = dynamic_cast<AbstractItem*>(target->getContents()))) {
+		// failed!
+		Display::getInstance()->addMessage(
+			player->getName() + " can't use what is " + 
+			direc[dr + 1][dc + 1] + "!"
+		);
+	} else {
+		// item messages are also handled by character classes.
+		item->pickUp();
+	}
+}
+
+void Game::move(int dr, int dc) {
+	static std::string direc[3][3] = {
+		{"North-West", "North", "North-East"},
+		{"West", "Nowhere", "East"},
+		{"South-West", "South", "South-East"}
+	};
+	if (player->canMove(dr, dc)) {
+		// great success!
+		player->move(dr, dc);
+		Display::getInstance()->addMessage(
+			player->getName() + " moves " +
+			direc[dr + 1][dc + 1] + "."
+		);
+	} else {
+		// oh noes!
+		Display::getInstance()->addMessage(
+			player->getName() + " can't move " + 
+			direc[dr + 1][dc + 1] + "!"
+		);
 	}
 }
 
