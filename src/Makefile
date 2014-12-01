@@ -12,7 +12,7 @@ OBJECTS = \
 			abstractEnemy.o \
 				human.o dwarf.o elf.o orc.o merchant.o dragon.o halfling.o \
 			player.o \
-				shade.o drow.o vampire.o troll.o goblin.o \
+				shade.o drow.o vampire.o troll.o goblin.o dlcPlayer.o \
 		abstractItem.o \
 			goldPile.o \
 				dragonHoard.o \

@@ -7,4 +7,6 @@
 #include "troll.h"
 #include "goblin.h"
 
+#include "dlcPlayer.h"
+
 #endif

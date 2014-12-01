@@ -137,7 +137,9 @@ void Game::displayMenu() {
 	Display::getInstance()->draw("v: Vampire. Steal HP on hit.", 11 + int(DLC::LAST), 0);
 	Display::getInstance()->draw("g: Goblin. Get an extra 5 gold every time you kill.", 12 + int(DLC::LAST), 0);
 	Display::getInstance()->draw("t: Troll. Regenerate health every turn.", 13 + int(DLC::LAST), 0);
-	Display::getInstance()->draw("Press q to quit.", 14 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("u: SuperVillan. This guy's OP. It'll be Easy mode. (DLC)", 14 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("a: VampTrol. Both races, no drawbacks. (DLC)", 15 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("Press q to quit.", 16 + int(DLC::LAST), 0);
 	
 	Display::getInstance()->render();
 }
@@ -156,6 +158,8 @@ Player* Game::titleScreen() {
 			case 'v': return new Vampire();
 			case 'g': return new Goblin();
 			case 't': return new Troll();
+			case 'u': return new SuperVillan();
+			case 'a': return new VampTrol();
 			case 'q': return NULL;
 		}
 		int dlcNum = ch - '0';

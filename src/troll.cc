@@ -35,7 +35,6 @@ void Troll::strike(AbstractEnemy *e) {
  *	Troll racial ability: regenerate 5 HP per turn.
  */
 Player* Troll::tickEffects() {
-	// TODO
 	int dHP = this->getHP();
 	this->addHP(5);
 	dHP = this->getHP() - dHP;
