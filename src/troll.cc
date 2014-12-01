@@ -40,7 +40,7 @@ Player* Troll::tickEffects() {
 	dHP = this->getHP() - dHP;
 	if (dHP) {
 		std::ostringstream oss;
-		oss << this->getName() << "regenerates " << dHP << " HP.";
+		oss << this->getName() << " regenerates " << dHP << " HP.";
 		Display::getInstance()->addMessage(oss.str());
 	}
 	return this;
