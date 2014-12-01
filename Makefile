@@ -1,6 +1,6 @@
 all:
-	$(MAKE) -C src $(MAKEFLAGS) release
+	$(MAKE) -C src release
 %:
-	$(MAKE) -C src $(MAKEFLAGS) $(MAKECMDGOALS)
+	$(MAKE) -C src $(MAKECMDGOALS)
 .PHONY: all
 
