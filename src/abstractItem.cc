@@ -12,6 +12,10 @@ int AbstractItem::getValue() const {
 	return this->value;
 }
 
+std::string AbstractItem::getName(bool) const {
+	return Renderable::getName();
+}
+
 bool AbstractItem::shouldDestroy() const {
 	return this->destroy;
 }

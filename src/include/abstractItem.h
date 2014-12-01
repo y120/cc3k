@@ -13,6 +13,7 @@ public:
 	virtual void pickUp() = 0;
 
 	int getValue() const;
+	virtual std::string getName(bool) const;
 
 	// After being picked up, the destroy flag is set. If the shouldDestroy flag
 	// is set then we delete; otherwise we just set to NULL (it'll have been

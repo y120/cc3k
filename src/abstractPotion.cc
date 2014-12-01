@@ -2,8 +2,11 @@
 #include "game.h"
 #include "dlc.h"
 #include "player.h"
+#include "floor.h"
+#include "tile.h"
 #include "inventory.h"
 #include "abstractPlayerEffect.h"
+#include <sstream>
 
 std::set<std::string> AbstractPotion::discoveredPotions;
 
@@ -67,6 +70,11 @@ void AbstractPotion::apply() {
 	// Game::addPlayerEffect() will make a copy of the AbstractEffect. It also
 	// handles the NULL case for us.
 	Game::getInstance()->addPlayerEffect(this->effect);
+	std::ostringstream oss;
+	oss << Game::getInstance()->getPlayer()->getName() << " uses " << this->getName(true);
+	Display::getInstance()->addMessage(oss.str());
+
+	this->discover();
 }
 
 /**
@@ -81,9 +89,13 @@ bool AbstractPotion::canPickUp() const {
  */
 void AbstractPotion::pickUp() {
 	if (!Game::getInstance()->hasDLC(DLC::Inventory)) {
+		this->apply();
 		return;
 	}
 
 	Game::getInstance()->getPlayer()->getInventory()->addItem(this);
 	this->destroy = false;
+
+	// delete it from floor
+	Game::getInstance()->getFloor()->getTile(this->getR(), this->getC())->setContents(NULL);
 }

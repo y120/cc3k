@@ -9,6 +9,7 @@
 
 // Explicitly provide access to DLC whenever we include game.h.
 #include "dlc.h"
+#include "display.h"
 
 class AbstractPlayerEffect;
 class Player;
@@ -37,6 +38,9 @@ public:
 	Player *titleScreen();
 	void loop(std::string);
 	void getInput();
+	void attack(int, int);
+	void use(int, int);
+	void move(int, int);
 	void nextLevel();
 	void renderUi();
 	void render();
