@@ -87,7 +87,7 @@ void Character::die() {
  *	ceil(100/(100+Def) * Atk)
  */
 int Character::calculateDamage(Character *other) const {
-std::cerr << "Calculating damage. My def: " << getDef() << ", atk: " << other->getAtk() << '\n';
+//std::cerr << "Calculating damage. My def: " << getDef() << ", atk: " << other->getAtk() << '\n';
 	return std::ceil(100.0 / (100 + this->getDef()) * other->getAtk());
 }
 

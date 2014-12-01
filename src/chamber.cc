@@ -171,14 +171,14 @@ Tile *Chamber::floodFill(std::vector<std::string> &store, int r, int c) {
 				break;
 			case 'D': {
 				Tile *hoardTile = NULL;
-std::cerr << "Dragon at " << r << " " << c << "!\n";
+//std::cerr << "Dragon at " << r << " " << c << "!\n";
 				for (int dr = -1; dr <= 1; dr++) {
 					for (int dc = -1; dc <= 1; dc++) {
 						if (!(dr == 0 && dc == 0)) {
 							if (store[r + dr][c + dc] == '9' || store[r + dr][c + dc] == '*') {
 								hoardTile = floodFill(store, r + dr, c + dc);
 								store[r + dr][c + dc] = ' ';
-std::cerr << "Dpos: " << r << " " << c << "; hoard: " << r + dr << " " << c + dc << '\n';
+//std::cerr << "Dpos: " << r << " " << c << "; hoard: " << r + dr << " " << c + dc << '\n';
 							}
 						}
 					}
@@ -229,7 +229,7 @@ std::cerr << "Dpos: " << r << " " << c << "; hoard: " << r + dr << " " << c + dc
 				thing = this->getFloor()->addItem(new GoldPile(GoldPile::MerchantHoard));
 				break;
 			case '9':
-std::cerr << "Hoard at " << r << " " << c << "!\n";
+//std::cerr << "Hoard at " << r << " " << c << "!\n";
 				thing = this->getFloor()->addItem(new DragonHoard());
 				break;
 		}

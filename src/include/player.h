@@ -34,6 +34,10 @@ public:
 	virtual bool canMoveTo(int, int) const;
 	virtual bool canMoveTo(Tile*) const;
 
+	virtual void move(int, int);
+	virtual void moveTo(int, int);
+	virtual void moveTo(Tile*);
+
 	// See explanation in abstractEnemy.h
 	// Generic.
 	virtual void getHitBy(AbstractEnemy*) = 0;

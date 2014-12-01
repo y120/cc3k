@@ -4,6 +4,7 @@
 #include "inventory.h"
 #include "floor.h"
 #include "tile.h"
+#include "abstractItem.h"
 
 namespace {
 	void setPlayerSprite(Renderable *obj) {
@@ -73,6 +74,39 @@ bool Player::canMoveTo(int r, int c) const {
 
 bool Player::canMoveTo(Tile *tile) const {
 	return tile->isPassableByPlayer();
+}
+
+void Player::move(int dr, int dc) {
+	this->moveTo(this->getR() + dr, this->getC() + dc);
+}
+
+void Player::moveTo(int r, int c) {
+	Tile *newTile = Game::getInstance()->getFloor()->getTile(r, c);
+	this->moveTo(newTile);
+}
+
+void Player::moveTo(Tile *newTile) {
+	// First, check the newTile is valid.
+	if (newTile == NULL || !newTile->isPassableByPlayer()) {
+		return;
+	}
+
+	// Now, if it contains something, we pick it up.
+	if (newTile->isOccupied()) {
+		AbstractItem *i = dynamic_cast<AbstractItem*>(newTile->getContents());
+		if (i) {
+			i->pickUp();
+		}
+	}
+
+	// Then, clear the old tile (if any) and set the new one.
+	Tile *oldTile = this->getTile();
+	if (oldTile != NULL) {
+		oldTile->setContents(NULL);
+	}
+	newTile->setContents(this);
+	this->r = newTile->getR();
+	this->c = newTile->getC();
 }
 
 // See explanation in abstractEnemy.h

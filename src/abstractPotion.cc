@@ -67,6 +67,8 @@ void AbstractPotion::apply() {
 	// Game::addPlayerEffect() will make a copy of the AbstractEffect. It also
 	// handles the NULL case for us.
 	Game::getInstance()->addPlayerEffect(this->effect);
+	// When we use a potion, we automatically discover it!
+	this->discover();
 }
 
 /**
@@ -83,7 +85,5 @@ void AbstractPotion::pickUp() {
 	if (!Game::getInstance()->hasDLC(DLC::Inventory)) {
 		return;
 	}
-
 	Game::getInstance()->getPlayer()->getInventory()->addItem(this);
-	this->destroy = false;
 }

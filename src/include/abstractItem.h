@@ -14,16 +14,10 @@ public:
 
 	int getValue() const;
 
-	// After being picked up, the destroy flag is set. If the shouldDestroy flag
-	// is set then we delete; otherwise we just set to NULL (it'll have been
-	// added to the Inventory).
-	bool shouldDestroy() const;
-
 	// do not implement render()!
 
 protected:
 	int value;
-	bool destroy;
 };
 
 #endif

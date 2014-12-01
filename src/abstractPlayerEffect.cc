@@ -134,28 +134,28 @@ bool AbstractPlayerEffect::canMove(int dr, int dc) const {
 bool AbstractPlayerEffect::canMoveTo(int r, int c) const {
 	return base->canMoveTo(r, c);
 }
-bool AbstractPlayerEffect::canMoveTo(Tile* tile) const {
+bool AbstractPlayerEffect::canMoveTo(Tile *tile) const {
 	return base->canMoveTo(tile);
 }
 void AbstractPlayerEffect::getHitBy(AbstractEnemy *e) {
 	base->getHitBy(e);
 }
-void AbstractPlayerEffect::getHitBy(Human* e) {
+void AbstractPlayerEffect::getHitBy(Human *e) {
 	base->getHitBy(e);
 }
-void AbstractPlayerEffect::getHitBy(Dwarf* e) {
+void AbstractPlayerEffect::getHitBy(Dwarf *e) {
 	base->getHitBy(e);
 }
-void AbstractPlayerEffect::getHitBy(Elf* e) {
+void AbstractPlayerEffect::getHitBy(Elf *e) {
 	base->getHitBy(e);
 }
-void AbstractPlayerEffect::getHitBy(Orc* e) {
+void AbstractPlayerEffect::getHitBy(Orc *e) {
 	base->getHitBy(e);
 }
-void AbstractPlayerEffect::getHitBy(Merchant* e) {
+void AbstractPlayerEffect::getHitBy(Merchant *e) {
 	base->getHitBy(e);
 }
-void AbstractPlayerEffect::getHitBy(Dragon* e) {
+void AbstractPlayerEffect::getHitBy(Dragon *e) {
 	base->getHitBy(e);
 }
 void AbstractPlayerEffect::strike(AbstractEnemy *e) {
