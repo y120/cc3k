@@ -107,9 +107,10 @@ Floor *Game::getFloor(int floor) const {
 void Game::displayMenu() {
 	using std::cout;
 	std::string desc[] = {
-		"Generated DLC (randomly generated dungeons)",
-		"Inventory DLC (store and use items later)",
-		"Colour DLC    (4-bit colour rendering - disable if artifacting)"
+		"Generated DLC  (randomly generated dungeons)",
+		"Inventory DLC  (store and use items later)",
+		"Fog of War DLC (only have vision of your chamber)",
+		"Colour DLC     (4-bit colour rendering - disable if artifacting)"
 	};
 	Display::getInstance()->draw("ChamberCrawler3000 Main Menu", 1, 0);
 

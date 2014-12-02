@@ -27,7 +27,7 @@ enum class DLC {
 	 *	==============
 	 *	You don't get perfect knowledge anymore!
 	 */
-	//FogOfWar,
+	FogOfWar,
 	/*
 	 *	Colour DLC
 	 *	==========
