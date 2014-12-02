@@ -368,6 +368,19 @@ std::vector<AbstractEnemy*> &Floor::getEnemies() {
 }
 
 /**
+ *	Accessor for the vector of items on the floor
+ */
+std::vector<AbstractItem*> &Floor::getItems() {
+	return items;
+}
+
+void Floor::removeItem(int index) {
+	if (index >= 0 && index < (int)items.size()) {
+		this->items.erase(this->items.begin() + index);
+	}
+}
+
+/**
  *	Randomly generates the floor layout. First clears all chambers.
  *
  *	We do this by first selecting five "seeds" -- these are where the chambers

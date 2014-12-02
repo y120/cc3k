@@ -1,5 +1,6 @@
 #include "dragonHoard.h"
 #include "dragon.h"
+#include <iostream>
 
 DragonHoard::DragonHoard()
 	: GoldPile(GoldPile::DragonHoard), dragon(NULL)

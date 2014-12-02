@@ -53,6 +53,7 @@ void AbstractEnemy::die() {
 		// With the Inventory DLC active, physically drop the GoldPile.
 		GoldPile *goldPile = new GoldPile(gps);
 		tile->setContents(goldPile);
+		Game::getInstance()->getFloor()->addItem(goldPile);
 		// Go up to the super.
 		Character::die();
 	} else {

@@ -1,6 +1,7 @@
 #include "game.h"
 #include "abstractPlayerEffect.h"
 #include "player.h"
+#include "inventory.h"
 #include "abstractEnemy.h"
 #include "abstractItem.h"
 #include "abstractPotion.h"
@@ -241,6 +242,8 @@ bool Game::getInput() {
 		std::cin >> direction;
 	} else if (input[0] == 'r') {	// restart
 		gameOver(true);
+	} else if (input[0] == 'i') {	// inventory access
+		direction = " ";
 	} else {						// move
 		direction = input;
 		input = "m";
@@ -261,23 +264,69 @@ bool Game::getInput() {
 		dc = -1;
 	}
 
-	if (input[0] == 'a') {
-		return attack(dr, dc);
-	} else if (input[0] == 'u') {
-		return use(dr, dc);
-	} else if (input[0] == 'm') {
-		Tile *target = getFloor()->getTile(player->getR() + dr, player->getC() + dc);
-		// if target tile is an enemy, attack it.
-		if (target && target->getContents() && 
-	    	dynamic_cast<AbstractEnemy*>(target->getContents())) {
-			return attack(dr, dc);
-		} // if target tile is a non-potion item, use it. 
-		else if (target && target->getContents() &&
-			dynamic_cast<AbstractItem*>(target->getContents()) &&
-			!dynamic_cast<AbstractPotion*>(target->getContents())) {
-			return use(dr, dc);
-		} else {
-			return move(dr, dc);
+	// no break necessary due to return
+	switch (input[0]) {
+		case 'a': return attack(dr, dc);
+		case 'u': return use(dr, dc);
+		case 'm': {
+			Tile *target = getFloor()->getTile(player->getR() + dr, player->getC() + dc);
+			// if target tile is an enemy, attack it.
+			if (target && target->getContents() && 
+		    	dynamic_cast<AbstractEnemy*>(target->getContents())) {
+				return attack(dr, dc);
+			} // if target tile is a non-potion item, use it and move to that square.
+			else if (target && target->getContents() &&
+				dynamic_cast<AbstractItem*>(target->getContents()) &&
+				!dynamic_cast<AbstractPotion*>(target->getContents())) {
+				return use(dr, dc) && move(dr, dc);
+			} else {
+				return move(dr, dc);
+			}
+		}
+		case 'i': {
+			if (!this->hasDLC(DLC::Inventory)) {
+				Display::getInstance()->addMessage("Can't access inventory: DLC disabled");
+				return false;
+			}
+			char c;
+			std::cin >> c;
+			Inventory *inv = this->getPlayer()->getInventory();
+			switch (::tolower(c)) {
+				case 'l': {
+					// List items: loop through and print messages.
+					std::ostringstream oss;
+					oss << "Inventory (" << inv->getSize() << " of " << inv->getCapacity() << ")";
+					Display::getInstance()->addMessage(oss.str());
+					oss.str("");
+					for (int i = 0; i < (int)inv->getSize(); i++) {
+						oss << "[" << i << "] " << inv->getItem(i)->getName();
+						if (i % 2 == 0) {
+							oss << " ";
+						} else {
+							Display::getInstance()->addMessage(oss.str());
+							oss.str("");
+						}
+					}
+					if (oss.str().length() > 0) {
+						Display::getInstance()->addMessage(oss.str());
+					}
+					return false;
+				}
+				default: {
+					int index = c - '0';
+					if (index < 0 || index >= (int)inv->getSize()) {
+						Display::getInstance()->addMessage("Invalid inventory index; use i l.");
+						return false;
+					}
+					AbstractItem *item = inv->getItem(index);
+					AbstractPotion *pot = dynamic_cast<AbstractPotion*>(item);
+					if (pot) {
+						pot->apply();
+					}
+					inv->removeItem(index);
+					return true;
+				}
+			}
 		}
 	}
 	return false;
@@ -325,9 +374,13 @@ bool Game::use(int dr, int dc) {
 		return false;
 	} else {
 		// item messages are also handled by character classes.
+		bool can = item->canPickUp();
 		item->pickUp();
-		target->setContents(NULL);
-		return true;
+		// if we can actually pick it up, set tile to null and move
+		if (can) {
+			target->setContents(NULL);
+		}
+		return can;
 	}
 }
 

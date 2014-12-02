@@ -43,6 +43,8 @@ public:
 	Chamber *getChamber(int, int) const;
 	Chamber *getChamber(Tile*) const;
 	std::vector<AbstractEnemy*> &getEnemies();
+	std::vector<AbstractItem*> &getItems();
+	void removeItem(int);
 
 	// Generates the entire Floor (including layout).
 	void generate();

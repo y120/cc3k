@@ -81,18 +81,19 @@ void AbstractPotion::apply() {
 		Game::getInstance()->addPlayerEffect(this->effect);
 	}
 
+	this->discover();
 	std::ostringstream oss;
-	oss << Game::getInstance()->getPlayer()->getName() << " uses " << this->getName(true);
+	oss << Game::getInstance()->getPlayer()->getName() << " uses " << this->getName();
 	Display::getInstance()->addMessage(oss.str());
 
-	this->discover();
 }
 
 /**
  *	Potions can be picked up only if the Inventory DLC is active.
  */
 bool AbstractPotion::canPickUp() const {
-	return Game::getInstance()->hasDLC(DLC::Inventory);
+	Inventory *inv = Game::getInstance()->getPlayer()->getInventory();
+	return Game::getInstance()->hasDLC(DLC::Inventory) && inv->getSize() < inv->getCapacity();
 }
 
 /**

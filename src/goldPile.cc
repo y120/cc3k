@@ -27,6 +27,10 @@ bool GoldPile::canPickUp() const {
  *	On pickup, the Player gains the gold. Duh. Also leave a message.
  */
 void GoldPile::pickUp() {
+	if (!this->canPickUp()) {
+		return;
+	}
+
 	Game::getInstance()->getPlayer()->addGold(this->value);
 
 	std::ostringstream oss;

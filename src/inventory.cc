@@ -1,6 +1,11 @@
 #include "inventory.h"
 
 #include "abstractItem.h"
+#include "game.h"
+#include "display.h"
+#include "player.h"
+#include "floor.h"
+#include <vector>
 
 /**
  *	Initialise capacity and reserve vector.
@@ -55,10 +60,21 @@ void Inventory::addCapacity(int d) {
  *	succeeded or not.
  */
 bool Inventory::addItem(AbstractItem *item) {
+	std::string pName = Game::getInstance()->getPlayer()->getName();
 	if (this->getSize() >= this->getCapacity()) {
+		Display::getInstance()->addMessage(pName +  "'s inventory is too full to pick that up!");
 		return false;
 	}
+	Display::getInstance()->addMessage(pName + " picks up a(n) " + item->getName() + "!");
 	contents.push_back(item);
+	// Now remove it from the Floor!
+	std::vector<AbstractItem*> items = Game::getInstance()->getFloor()->getItems();
+	for (int i = 0; i < (int)items.size(); i++) {
+		if (items[i] == item) {
+			Game::getInstance()->getFloor()->removeItem(i);
+			break;
+		}
+	}
 	return true;
 }
 
@@ -66,7 +82,7 @@ bool Inventory::addItem(AbstractItem *item) {
  *	Returns the item at a specific index, or NULL if none.
  */
 AbstractItem* Inventory::getItem(unsigned index) const {
-	return (index >= this->getSize()) ? this->contents[index] : NULL;
+	return (index < this->getSize()) ? this->contents[index] : NULL;
 }
 
 /**
