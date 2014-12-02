@@ -8,6 +8,7 @@
 namespace {
 	void setGoldSprite(Renderable *obj) {
 		obj->setSprite("G");
+		obj->setColour(ColourType::DYELLOW);
 	}
 }
 

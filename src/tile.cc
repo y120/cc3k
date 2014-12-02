@@ -123,6 +123,13 @@ std::map<TileType, Renderable> &Tile::getTileset() {
 	tileset[TileType::DoorTile].setSprite("+");
 	tileset[TileType::PassageTile].setSprite("#");
 	tileset[TileType::ExitTile].setSprite("\\");
+	tileset[TileType::NoTile].setColour(ColourType::BLUE);
+	tileset[TileType::FloorTile].setColour(ColourType::BLUE);
+	tileset[TileType::WallTileH].setColour(ColourType::BLUE);
+	tileset[TileType::WallTileV].setColour(ColourType::BLUE);
+	tileset[TileType::DoorTile].setColour(ColourType::MAGENTA);
+	tileset[TileType::PassageTile].setColour(ColourType::DMAGENTA);
+	tileset[TileType::ExitTile].setColour(ColourType::WHITE);
 	return tileset;
 }
 

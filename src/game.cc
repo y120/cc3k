@@ -107,38 +107,39 @@ void Game::displayMenu() {
 	using std::cout;
 	std::string desc[] = {
 		"Generated DLC (randomly generated dungeons)",
-		"Inventory DLC (store and use items later)"
+		"Inventory DLC (store and use items later)",
+		"Colour DLC    (4-bit colour rendering - disable if artifacting)"
 	};
-	Display::getInstance()->draw("ChamberCrawler3000 Main Menu", 3, 0);
+	Display::getInstance()->draw("ChamberCrawler3000 Main Menu", 1, 0);
 
 	// DLC select
-	Display::getInstance()->draw("Enter a number to enable or disable that DLC, or a race to start.", 5, 0);
+	Display::getInstance()->draw("Enter a number to enable or disable that DLC, or a race to start.", 3, 0);
 	std::ostringstream oss;
 	for (int i = 0; i < static_cast<int>(DLC::LAST); i++) {
 		oss.str("");
 		oss << "[";
 		oss << (hasDLC(static_cast<DLC>(i)) ? 'X' : ' ');
-		oss << "] " << i << ": " << desc[i] << "\n";
-		Display::getInstance()->draw(oss.str(), 7 + i, 0);
+		oss << "] " << i << ": " << desc[i];
+		Display::getInstance()->draw(oss.str(), 5 + i, 0);
 	}
 
 	if (score != -1) {
 		oss.str(won ? "YOU WIN!" : "GAME OVER");
-		Display::getInstance()->draw(oss.str(), 20, 39 - oss.str().length() / 2);
+		Display::getInstance()->draw(oss.str(), 20, 36 - oss.str().length() / 2);
 		oss.str("");
 		oss << "Score: " << score;
-		Display::getInstance()->draw(oss.str(), 22, 39 - oss.str().length() / 2);
+		Display::getInstance()->draw(oss.str(), 22, 36 - oss.str().length() / 2);
 	}
 
 	// Race select
-	Display::getInstance()->draw("Races:", 8 + int(DLC::LAST), 0);
-	Display::getInstance()->draw("s: Shade. No special bonus.", 9 + int(DLC::LAST), 0);
-	Display::getInstance()->draw("d: Drow. Potions are more impactful.", 10 + int(DLC::LAST), 0);
-	Display::getInstance()->draw("v: Vampire. Steal HP on hit.", 11 + int(DLC::LAST), 0);
-	Display::getInstance()->draw("g: Goblin. Get an extra 5 gold every time you kill.", 12 + int(DLC::LAST), 0);
-	Display::getInstance()->draw("t: Troll. Regenerate health every turn.", 13 + int(DLC::LAST), 0);
-	Display::getInstance()->draw("u: SuperVillan. This guy's OP. It'll be Easy mode. (DLC)", 14 + int(DLC::LAST), 0);
-	Display::getInstance()->draw("a: VampTrol. Both races, no drawbacks. (DLC)", 15 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("Races:", 7 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("s: Shade. No special bonus.", 8 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("d: Drow. Potions are more impactful.", 9 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("v: Vampire. Steal HP on hit.", 10 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("g: Goblin. Get an extra 5 gold every time you kill.", 11 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("t: Troll. Regenerate health every turn.", 12 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("u: SuperVillan. This guy's OP. It'll be Easy mode. (DLC)", 13 + int(DLC::LAST), 0);
+	Display::getInstance()->draw("a: VampTrol. Both races, no drawbacks. (DLC)", 14 + int(DLC::LAST), 0);
 	Display::getInstance()->draw("Press q to quit.", 16 + int(DLC::LAST), 0);
 	
 	Display::getInstance()->render();

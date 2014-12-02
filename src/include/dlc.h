@@ -28,6 +28,13 @@ enum class DLC {
 	 *	You don't get perfect knowledge anymore!
 	 */
 	//FogOfWar,
+	/*
+	 *	Colour DLC
+	 *	==========
+	 *	Finally, you can see your ASCII player, tile and enemy sprites
+	 *	in glorious 4-bit colour!
+	 */
+	Colour,
 	LAST
 };
 
