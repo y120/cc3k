@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "display.h"
 #include "renderable.h"
+#include "game.h"			// for DLC support
 
 using namespace std;
 
@@ -22,13 +23,11 @@ void Display::setOutput(std::ostream *os) {
 
 void Display::resize(int row, int col) {
 	screenBuffer.resize(row);
-	string reset = "";
-	for (int l0 = 0; l0 < col; l0++) {
-		reset = reset + ' ';
-	}
 	for (int l0 = 0; l0 < row; l0++) {
-		//screenBuffer[l0].resize(col);
-		screenBuffer[l0] = reset;
+		screenBuffer[l0].resize(col);
+		for (int l1 = 0; l1 < col; l1++) {
+			screenBuffer[l0][l1] = " ";
+		}
 	}
 	rSize = row;
 	cSize = col;
@@ -43,13 +42,22 @@ void Display::clearMessages() {
 }
 
 void Display::draw(const Renderable *ado) {
-	draw(ado->getSprite(), ado->getR(), ado->getC());
+	string sprite = ado->getSprite();
+	if (Game::getInstance()->hasDLC(DLC::Colour)) {
+		sprite = string("\033[") + ado->getColour() + "m" + sprite +
+				 "\033[97m";	// reset to white
+	}
+	drawChar(sprite, ado->getR(), ado->getC());
 }
 
 void Display::draw(const string &sprite, int row, int col) {
-	screenBuffer[row % rSize].replace(
-		col % cSize, sprite.length(), sprite
-	);
+	for (int l0 = 0; l0 < int(sprite.length()); l0++) {
+		screenBuffer[row % rSize][(l0 + col) % cSize] = string("") + sprite[l0];
+	}
+}
+
+void Display::drawChar(const string &sprite, int row, int col) {
+	screenBuffer[row][col] = sprite;
 }
 
 void Display::drawMessage() {
@@ -63,12 +71,15 @@ void Display::drawMessage() {
 }
 
 void Display::render() {
-	string reset = "";
-	for (int l0 = 0; l0 < cSize; l0++) {
-		reset = reset + ' ';
+	vector<string> buffer(rSize, "");
+	for (int l0 = 0; l0 < rSize; l0++) {
+		for (int l1 = 0; l1 < cSize; l1++) {
+			buffer[l0].append(screenBuffer[l0][l1]);
+		}
 	}
 	for (int l0 = 0; l0 < rSize; l0++) {
-		*out << screenBuffer[l0] << endl;
-		screenBuffer[l0] = reset;
+		*out << buffer[l0] << endl;
 	}
+	// reset screenbuffer
+	resize(rSize, cSize);
 }

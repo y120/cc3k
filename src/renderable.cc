@@ -4,15 +4,17 @@
 using namespace std;
 
 Renderable::Renderable()
-	: name("Unknown"), sprite("?"), r(0), c(0)
+	: name("Unknown"), sprite("?"), colour(ColourType::WHITE),
+		r(0), c(0)
 {}
 
 Renderable::Renderable(int row, int col)
-	: name("Unknown"), sprite("?"), r(row), c(col)
+	: name("Unknown"), sprite("?"), colour(ColourType::WHITE),
+		r(row), c(col)
 {}
 
 Renderable::Renderable(string spr, int row, int col)
-	: name(spr), sprite(spr), r(row), c(col)
+	: name(spr), sprite(spr), colour(ColourType::WHITE), r(row), c(col)
 {}
 
 Renderable::~Renderable() {}
@@ -23,6 +25,13 @@ string Renderable::getName() const {
 
 string Renderable::getSprite() const {
 	return sprite;
+}
+
+string Renderable::getColour() const {
+	string s = "";
+	s = s + char('0' + (int(colour) / 10));
+	s = s + char('0' + (int(colour) % 10));
+	return s;
 }
 
 int Renderable::getR() const {
@@ -39,6 +48,10 @@ void Renderable::setName(const string &nam) {
 
 void Renderable::setSprite(const string &spr) {
 	sprite = spr;
+}
+
+void Renderable::setColour(ColourType setc) {
+	colour = setc;
 }
 
 void Renderable::moveSprite(int row, int col) {

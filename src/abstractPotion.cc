@@ -13,6 +13,7 @@ std::set<std::string> AbstractPotion::discoveredPotions;
 namespace {
 	void setPotionSprite(Renderable *obj) {
 		obj->setSprite("P");
+		obj->setColour(ColourType::CYAN);
 	}
 }
 

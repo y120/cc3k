@@ -13,7 +13,7 @@ class Display {
 	Display &operator=(const Display&);
 	
 	std::ostream* out;
-	std::vector<std::string> screenBuffer;
+	std::vector<std::vector<std::string> > screenBuffer;
 	int rSize, cSize;
 
 	// message containers
@@ -27,6 +27,7 @@ public:
 	void drawMessage();
 	void draw(const Renderable *);
 	void draw(const std::string &, int row = 0, int col = 0);
+	void drawChar(const std::string &, int row = 0, int col = 0);
 	void render();
 };
 
